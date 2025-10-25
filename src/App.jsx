@@ -10,7 +10,7 @@ import Categorias from "./views/Categorias";                      // Componente 
 import Carrito from "./views/Carrito";                            // Componente del carrito
 import Checkout from "./views/Checkout";                          // Componente de checkout
 import AdminPanel from "./views/AdminPanel";                      // Componente del panel de administración
-import { AuthProvider } from "./Context/AuthProvider";            // Proveedor de contexto de autenticación
+import { AuthProvider } from "./context/AuthProvider";            // Proveedor de contexto de autenticación
 
 // COMPONENTE PRINCIPAL
 /**
