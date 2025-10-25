@@ -1,5 +1,5 @@
 // IMPORTS 
-import { useAuth } from "../Context/AuthContext";     // Hook personalizado para autenticación
+import { useAuth } from "../hooks/useAuth";     // Hook personalizado para autenticación
 import { useNavigate } from "react-router-dom";      // Hook para navegación programática
 import Navbar from "../components/Navbar";            // Componente de barra de navegación
 
@@ -10,7 +10,7 @@ import Navbar from "../components/Navbar";            // Componente de barra de 
  */
 export default function Dashboard() {
     // HOOKS 
-    const { user, setUser } = useAuth();             // Usuario actual y función para actualizarlo
+    const { user, logout } = useAuth();             // Usuario actual y función para cerrar sesión
     const navigate = useNavigate();                  // Función para navegación programática
 
     // PROTECCIÓN DE RUTA
@@ -25,8 +25,8 @@ export default function Dashboard() {
      * Maneja el cierre de sesión del usuario
      */
     const handleLogout = () => {
-        setUser(null);                               // Limpiar usuario del contexto
-        navigate("/");                              // Redirigir a la página principal
+        logout();                               // Cerrar sesión mediante la API del proveedor
+        navigate("/");                         // Redirigir a la página principal
     };
 
     // RENDER

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
-export const AuthProvidear = ({ children }) => { //children son los componentes que envuelve AuthProvider, un paquete
+export const AuthProvider = ({ children }) => { // children son los componentes que envuelve AuthProvider
     const [user, setUser] = useState(() => {
         try {
             const stored = localStorage.getItem("user");

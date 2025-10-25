@@ -1,16 +1,16 @@
 // IMPORTS
 import { BrowserRouter, Routes, Route } from "react-router-dom";  // Componentes de enrutamiento
-import HomePage from "./HomePage";                                // Componente de página principal
-import Login from "./Login";                                      // Componente de inicio de sesión
-import Register from "./Register";                                // Componente de registro
-import Dashboard from "./Dashboard";                              // Componente del dashboard
+import HomePage from "./views/HomePage";                                // Componente de página principal
+import Login from "./views/Login";                                      // Componente de inicio de sesión
+import Register from "./views/Register";                                // Componente de registro
+import Dashboard from "./views/Dashboard";                              // Componente del dashboard
 import Tiendas from "./views/Tiendas";                            // Componente de tiendas
 import Ofertas from "./views/Ofertas";                            // Componente de ofertas
 import Categorias from "./views/Categorias";                      // Componente de categorías
 import Carrito from "./views/Carrito";                            // Componente del carrito
 import Checkout from "./views/Checkout";                          // Componente de checkout
 import AdminPanel from "./views/AdminPanel";                      // Componente del panel de administración
-import { AuthProvider } from "./Context/AuthContext";            // Proveedor de contexto de autenticación
+import { AuthProvider } from "./Context/AuthProvider";            // Proveedor de contexto de autenticación
 
 // COMPONENTE PRINCIPAL
 /**
