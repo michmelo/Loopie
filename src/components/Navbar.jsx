@@ -1,7 +1,7 @@
 // IMPORTS 
 import { Link, useNavigate } from "react-router-dom";  // Componentes de enrutamiento
-import { useAuth } from "../Context/AuthContext";      // Hook personalizado para autenticación
-import logoImage from "../assets/Loopie.png";            // Importar el logo png
+import { useAuth } from "../hooks/useAuth";      // Hook personalizado para autenticación
+import logoImage from "../assets/img/logo/Loopie.png";            // Importar el logo png
 
 // COMPONENTE NAVBAR
 /**

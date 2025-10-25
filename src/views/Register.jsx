@@ -1,7 +1,7 @@
 // IMPORTS 
 import { useState } from "react";                    // Hook para manejo de estado local
 import { useNavigate } from "react-router-dom";      // Hook para navegación programática
-import { useAuth } from "../Context/AuthContext";     // Hook personalizado para autenticación
+import { useAuth } from "../hooks/useAuth";     // Hook personalizado para autenticación
 import Navbar from "../components/Navbar";            // Componente de barra de navegación
 
 // COMPONENTE REGISTER
@@ -23,7 +23,7 @@ export default function Register() {
     const [success, setSuccess] = useState(false);    // Estado de éxito del registro
 
     // HOOKS
-    const { setUser } = useAuth();                    // Función para establecer usuario autenticado
+    const { login } = useAuth();                    // Función para iniciar sesión (establecer usuario)
     const navigate = useNavigate();                   // Función para navegación programática
 
     // FUNCIÓN DE MANEJO DE CAMBIOS EN INPUTS
@@ -92,7 +92,7 @@ export default function Register() {
         
         // Auto-login después del registro
         setTimeout(() => {
-            setUser(nuevoUsuario);                // Establecer usuario en el contexto
+            login(nuevoUsuario);                // Establecer usuario en el contexto usando la API del proveedor
             navigate("/");                        // Navegar a la página principal
         }, 1500);
     };

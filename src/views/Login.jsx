@@ -1,7 +1,7 @@
 // IMPORTS 
 import { useState } from "react";                    // Hook para manejo de estado local
 import { useNavigate } from "react-router-dom";      // Hook para navegación programática
-import { useAuth } from "../Context/AuthContext";     // Hook personalizado para autenticación
+import { useAuth } from "../hooks/useAuth";     // Hook personalizado para autenticación
 import { obtenerUsuarios } from "../services/Api";             // Función para obtener usuarios del backend
 import Navbar from "../components/Navbar";            // Componente de barra de navegación
 
@@ -17,7 +17,7 @@ export default function Login() {
     const [error, setError] = useState("");           // Mensaje de error para mostrar al usuario
     
     // HOOKS
-    const { setUser } = useAuth();                    // Función para establecer usuario autenticado
+    const { login } = useAuth();                    // Función para iniciar sesión (establecer usuario)
     const navigate = useNavigate();                   // Función para navegación programática
 
     // FUNCIÓN DE MANEJO DE LOGIN
@@ -50,8 +50,8 @@ export default function Login() {
             return;
         }
 
-        // Autenticación exitosa
-        setUser(usuario);                     // Establecer usuario en el contexto
+    // Autenticación exitosa
+    login(usuario);                     // Establecer usuario en el contexto usando la API del proveedor
         navigate("/");                        // Navegar a la página principal
     };
 
