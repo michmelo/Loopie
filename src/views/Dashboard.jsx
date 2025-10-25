@@ -1,7 +1,7 @@
 // IMPORTS 
-import { useAuth } from "./Context/AuthContext";     // Hook personalizado para autenticación
+import { useAuth } from "../Context/AuthContext";     // Hook personalizado para autenticación
 import { useNavigate } from "react-router-dom";      // Hook para navegación programática
-import Navbar from "./components/Navbar";            // Componente de barra de navegación
+import Navbar from "../components/Navbar";            // Componente de barra de navegación
 
 // COMPONENTE DASHBOARD
 /**

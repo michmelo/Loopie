@@ -1,9 +1,9 @@
 // IMPORTS 
 import { useState } from "react";                    // Hook para manejo de estado local
 import { useNavigate } from "react-router-dom";      // Hook para navegación programática
-import { useAuth } from "./Context/AuthContext";     // Hook personalizado para autenticación
-import { obtenerUsuarios } from "./Api";             // Función para obtener usuarios del backend
-import Navbar from "./components/Navbar";            // Componente de barra de navegación
+import { useAuth } from "../Context/AuthContext";     // Hook personalizado para autenticación
+import { obtenerUsuarios } from "../services/Api";             // Función para obtener usuarios del backend
+import Navbar from "../components/Navbar";            // Componente de barra de navegación
 
 // COMPONENTE LOGIN
 /**
