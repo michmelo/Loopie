@@ -162,3 +162,17 @@ p {
 .mt-4 { margin-top: var(--spacing-lg); }
 .mt-5 { margin-top: var(--spacing-xl); }
 
+/* Logo en página */
+.page-logo {
+  width: 160px;
+  max-width: 40%;
+  height: auto;
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .page-logo {
+    width: 200px;
+  }
+}
+
