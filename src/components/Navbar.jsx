@@ -1,7 +1,8 @@
 // IMPORTS 
-import { Link, useNavigate } from "react-router-dom";  // Componentes de enrutamiento
-import { useAuth } from "../hooks/useAuth";      // Hook personalizado para autenticación
-import logoImage from "../assets/img/logo/Loopie.png";            // Importar el logo png
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import UserDropdown from "./UserDropdown";
+import logoImage from "../assets/img/logo/loopie.png";
 
 // COMPONENTE NAVBAR
 /**
@@ -10,8 +11,8 @@ import logoImage from "../assets/img/logo/Loopie.png";            // Importar el
  */
 export default function Navbar() {
     // HOOKS 
-    const { user } = useAuth();                        // Usuario actual autenticado
-    const navigate = useNavigate();                    // Función para navegación programática
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     // FUNCIÓN DE NAVEGACIÓN 
     /**
@@ -29,7 +30,6 @@ export default function Navbar() {
             boxShadow: "var(--shadow-md)"
         }}>
             <div className="container-fluid">
-                {/* Logo y nombre de la marca */}
                 <div 
                     className="navbar-brand d-flex align-items-center" 
                     onClick={handleLogoClick}
@@ -174,32 +174,9 @@ export default function Navbar() {
                             </Link>
                         </li>
 
-                        {/* Pestaña Perfil de Usuario */}
+                        {/* Usuario autenticado: saludo desplegable con opciones (perfil / logout) */}
                         {user ? (
-                            <li className="nav-item">
-                                {/* Si el usuario está autenticado, mostrar enlace al dashboard */}
-                                <Link 
-                                    className="nav-link" 
-                                    to="/dashboard"
-                                    style={{
-                                        color: "var(--primary-color)",
-                                        fontWeight: "500",
-                                        padding: "8px 16px",
-                                        borderRadius: "var(--border-radius-md)",
-                                        transition: "all 0.25s ease"
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        e.target.style.backgroundColor = "var(--light-color)";
-                                        e.target.style.color = "var(--primary-color)";
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.target.style.backgroundColor = "transparent";
-                                        e.target.style.color = "var(--primary-color)";
-                                    }}
-                                >
-                                    {user.username}
-                                </Link>
-                            </li>
+                            <UserDropdown user={user} logout={logout} navigate={navigate} />
                         ) : (
                             <>
                                 {/* Si no está autenticado, mostrar enlaces al login y registro */}
@@ -213,14 +190,6 @@ export default function Navbar() {
                                             padding: "8px 16px",
                                             borderRadius: "var(--border-radius-md)",
                                             transition: "all 0.25s ease"
-                                        }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.backgroundColor = "var(--light-color)";
-                                            e.target.style.color = "var(--primary-color)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.backgroundColor = "transparent";
-                                            e.target.style.color = "var(--primary-color)";
                                         }}
                                     >
                                         Iniciar Sesión
@@ -237,14 +206,6 @@ export default function Navbar() {
                                             borderRadius: "var(--border-radius-md)",
                                             transition: "all 0.25s ease"
                                         }}
-                                        onMouseEnter={(e) => {
-                                            e.target.style.backgroundColor = "var(--light-color)";
-                                            e.target.style.color = "var(--primary-color)";
-                                        }}
-                                        onMouseLeave={(e) => {
-                                            e.target.style.backgroundColor = "transparent";
-                                            e.target.style.color = "var(--primary-color)";
-                                        }}
                                     >
                                         Registrarse
                                     </Link>
@@ -257,4 +218,3 @@ export default function Navbar() {
         </nav>
     );
 }
-

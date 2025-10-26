@@ -1,5 +1,24 @@
 // IMPORTS
-import Navbar from "../components/Navbar";              // Componente de barra de navegación
+import Navbar from "../components/Navbar";
+import AppFooter from "../components/Footer";
+import PageHeader from "../components/PageHeader";
+import OfferCard from "../components/oferta/OfferCard";
+
+// DATOS DEMO OFERTAS
+// TODO: CAMBIAR POR DATA MOCKUP
+const offersData = [
+    { id: 1, discount: "50% OFF", title: "Jeans Seleccionados", description: "Gran descuento en modelos Slim y Skinny.", target: "/ofertas/jeans" },
+    { id: 2, discount: "3x2 en Básicos", title: "Poleras y Camisetas", description: "Lleva 3 y paga solo 2 en toda la línea básica.", target: "/ofertas/basicos" },
+    { id: 3, discount: "Envío GRATIS", title: "Abrigos y Chaquetas", description: "Envío sin costo en pedidos superiores a $50.000.", target: "/ofertas/abrigos" },
+];
+
+// Navegación (simulación)
+// TODO: REEMPLAZAR POR useNavigate y ruta correcta
+const handleViewOffer = (offerTitle) => {
+    console.log(`Ver detalles de la oferta: ${offerTitle}`);
+    // useNavigate('/ofertas/' + offerId)
+};
+
 
 // COMPONENTE OFERTAS
 /**
@@ -9,99 +28,32 @@ import Navbar from "../components/Navbar";              // Componente de barra d
 export default function Ofertas() {
     // RENDER
     return (
-        <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)" }}>
-            {/* Barra de navegación */}
+        <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
             <Navbar />
             
-            {/* Contenido principal */}
-            <main className="container-fluid" style={{ padding: "2rem" }}>
+            <main className="container-fluid" style={{ padding: "2rem", flexGrow: 1 }}>
                 <div className="container">
-                    {/* Header de la página */}
-                    <div className="row mb-4">
-                        <div className="col-12">
-                            <h1 style={{
-                                color: "var(--primary-color)",
-                                fontSize: "2.5rem",
-                                fontWeight: "700",
-                                marginBottom: "1rem",
-                                textAlign: "center"
-                            }}>
-                                Ofertas Especiales
-                            </h1>
-                            <p style={{
-                                color: "var(--secondary-color)",
-                                fontSize: "1.1rem",
-                                textAlign: "center",
-                                maxWidth: "600px",
-                                margin: "0 auto"
-                            }}>
-                                No te pierdas estas increíbles ofertas con descuentos exclusivos
-                            </p>
-                        </div>
-                    </div>
+                    
+                    <PageHeader 
+                        title="Ofertas Especiales"
+                        description="No te pierdas estas increíbles ofertas con descuentos exclusivos en tus prendas favoritas."
+                    />
 
-                    {/* Grid de ofertas */}
                     <div className="row">
-                        <div className="col-12 col-md-6 col-lg-4 mb-4">
-                            <div className="card-custom">
-                                <div style={{
-                                    backgroundColor: "var(--accent-color)",
-                                    color: "var(--primary-color)",
-                                    padding: "0.5rem",
-                                    borderRadius: "var(--border-radius-md)",
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    marginBottom: "1rem"
-                                }}>
-                                    50% OFF
-                                </div>
-                                <h3>Categoria 1</h3>
-                                <p>Descuento</p>
-                                <button className="btn-custom">Ver Oferta</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-4 mb-4">
-                            <div className="card-custom">
-                                <div style={{
-                                    backgroundColor: "var(--accent-color)",
-                                    color: "var(--primary-color)",
-                                    padding: "0.5rem",
-                                    borderRadius: "var(--border-radius-md)",
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    marginBottom: "1rem"
-                                }}>
-                                    30% OFF
-                                </div>
-                                <h3>Categoria 2</h3>
-                                <p>Descuento</p>
-                                <button className="btn-custom">Ver Oferta</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-4 mb-4">
-                            <div className="card-custom">
-                                <div style={{
-                                    backgroundColor: "var(--accent-color)",
-                                    color: "var(--primary-color)",
-                                    padding: "0.5rem",
-                                    borderRadius: "var(--border-radius-md)",
-                                    textAlign: "center",
-                                    fontWeight: "bold",
-                                    marginBottom: "1rem"
-                                }}>
-                                    2x1
-                                </div>
-                                <h3>Categoria 3</h3>
-                                <p>Descuento</p>
-                                <button className="btn-custom">Ver Oferta</button>
-                            </div>
-                        </div>
+                        {offersData.map(offer => (
+                            <OfferCard
+                                id={offer.id}
+                                discount={offer.discount}
+                                title={offer.title}
+                                description={offer.description}
+                                onClick={() => handleViewOffer(offer.title)}
+                            />
+                        ))}
                     </div>
                 </div>
             </main>
+            
+            <AppFooter />
         </div>
     );
 }
-
