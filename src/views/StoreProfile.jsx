@@ -5,15 +5,8 @@ import ProfileInfoCard from "../components/perfil/ProfileInfoCard";
 import ActionPanel from "../components/perfil/ActionPanel";
 import ProductTable from "../components/products/ProductTable";
 import { Link, useNavigate } from "react-router-dom";
-
-// DATOS DEMO
-const mockProducts = [
-    { id: 'P001', name: 'Jeans Skinny Azul', stock: 45, price: '34.990', category: 'Jeans' },
-    { id: 'P002', name: 'Polera Algodón Negra', stock: 8, price: '12.990', category: 'Poleras' },
-    { id: 'P003', name: 'Chaqueta Denim Clásica', stock: 21, price: '59.990', category: 'Chaquetas' },
-    { id: 'P004', name: 'Vestido Floral Verano', stock: 3, price: '29.990', category: 'Vestidos' },
-    { id: 'P005', name: 'Zapatillas Urbanas', stock: 12, price: '45.990', category: 'Zapatos' },
-];
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../data/api/api";
 
 /**
  * Vista de perfil para tiendas.
@@ -21,6 +14,26 @@ const mockProducts = [
 
 export default function StoreProfile({ user, logout }) {
     const navigate = useNavigate();
+
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        let mounted = true;
+        
+        (async () => {
+            try {
+                const res = await getAllProducts();
+                let list = [];
+                if (Array.isArray(res)) list = res;
+                if (mounted) setProducts(list);
+            } catch (err) {
+                console.error('StoreProfile: error cargando productos', err);
+                if (mounted) setProducts([]);
+            }
+        })();
+
+        return () => { mounted = false; };
+    }, []);
 
     if (!user) {
         navigate("/login");
@@ -66,7 +79,7 @@ export default function StoreProfile({ user, logout }) {
                                 </div>
 
                                 {/* TABLA DE PRODUCTOS */}
-                                <ProductTable products={mockProducts} />
+                                <ProductTable products={products} />
                             </div>
                         </div>
                     </div>

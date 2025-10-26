@@ -9,13 +9,9 @@ import ProductImageGallery from "../components/products/ProductImageGallery";
 import QuickTools from "../components/admin/QuickTools";
 import RecentActivity from "../components/admin/RecentActivity";
 import { useAuth } from "../hooks/useAuth";
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../data/api/api";
 
-// DATOS DEMO
-const mockProducts = [
-  { id: 'P001', name: 'Jeans Skinny Azul', stock: 45, price: '34.990', category: 'Jeans' },
-  { id: 'P002', name: 'Polera Algodón Negra', stock: 8, price: '12.990', category: 'Poleras' },
-  { id: 'P003', name: 'Chaqueta Denim Clásica', stock: 21, price: '59.990', category: 'Chaquetas' },
-];
 
 const mockOrders = [
   { id: 'O1001', customer: 'María R.', total: '45.990', status: 'Enviado' },
@@ -25,10 +21,30 @@ const mockOrders = [
 export default function StoreDashboard() {
   const { user, isAuthenticated } = useAuth();
 
-  // TODO: ACTUALIZAR MÉTODO DE PROTECCIÓN SEGÚN ROLES FUTUROS
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    
+    (async () => {
+      try {
+        const res = await getAllProducts();
+        let list = [];
+        if (Array.isArray(res)) list = res;
+        if (mounted) setProducts(list);
+      } catch (err) {
+        console.error('StoreDashboard: error cargando productos', err);
+        if (mounted) setProducts([]);
+      } 
+    })();
+
+    return () => { mounted = false; };
+    
+  }, []);
+
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   const role = user?.rol || user?.role;
-  if (!(role === "tienda" || role === "store")) return <Navigate to="/no-auth" replace />;
+  if (!(role === "tienda")) return <Navigate to="/no-auth" replace />;
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--background-color)', display: 'flex', flexDirection: 'column' }}>
@@ -59,14 +75,14 @@ export default function StoreDashboard() {
               <div className="card-custom" style={{ padding: '1rem', marginBottom: '1rem' }}>
                 <h3 style={{ marginTop: 0 }}>Productos</h3>
                 <p style={{ color: 'var(--muted-color)' }}>Lista de productos publicados. Puedes editar el stock o ver detalles.</p>
-                <ProductTable products={mockProducts} />
+                <ProductTable products={products} />
               </div>
 
               <div className="card-custom" style={{ padding: '1rem' }}>
                 <h3 style={{ marginTop: 0 }}>Detalle de producto (ejemplo)</h3>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                  <ProductImageGallery images={[]} />
-                  <ProductInfoPanel product={mockProducts[0]} />
+                  <ProductImageGallery images={products?.[0]?.images || []} />
+                  <ProductInfoPanel product={products?.[0] || null} />
                 </div>
               </div>
             </div>

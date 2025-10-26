@@ -3,23 +3,34 @@ import Navbar from "../components/Navbar";
 import AppFooter from "../components/Footer";
 import PageHeader from "../components/PageHeader";
 import ProductTable from "../components/products/ProductTable";
-
-// DATOS SIMULADOS
-const mockProducts = [
-    { id: 'P001', name: 'Jeans Skinny Azul', stock: 45, price: '34.990', category: 'Jeans' },
-    { id: 'P002', name: 'Polera Algodón Negra', stock: 8, price: '12.990', category: 'Poleras' },
-    { id: 'P003', name: 'Chaqueta Denim Clásica', stock: 21, price: '59.990', category: 'Chaquetas' },
-    { id: 'P004', name: 'Vestido Floral Verano', stock: 3, price: '29.990', category: 'Vestidos' },
-    { id: 'P005', name: 'Zapatillas Urbanas', stock: 12, price: '45.990', category: 'Zapatos' },
-];
-
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../data/api/api";
 
 // PRODUCT REPORT
 /* Panel de administración para ver y gestionar el listado de productos. */
 
 export default function ProductReport() {
     
-    // TODO: IMPLEMENTAR useAuth PARA RESTRINGIR ACCESO (SOLO ADMIN)
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        let mounted = true;
+
+        (async () => {
+            try {
+                const res = await getAllProducts();
+                let list = [];
+                if (Array.isArray(res)) list = res;
+                if (mounted) setProducts(list);
+            } catch (err) {
+                console.error('ProductReport: error cargando productos', err);
+                if (mounted) setProducts([]);
+            }
+        })();
+
+        return () => { mounted = false; };
+    
+    }, []);
 
     // RENDER
     return (
@@ -48,7 +59,7 @@ export default function ProductReport() {
                     </div>
 
                     {/* Reporte de productos */}
-                    <ProductTable products={mockProducts} />
+                    <ProductTable products={products} />
 
                 </div>
             </main>
