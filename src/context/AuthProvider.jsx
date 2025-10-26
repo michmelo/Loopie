@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
-export const AuthProvider = ({ children }) => { // children son los componentes que envuelve AuthProvider
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         try {
             const stored = localStorage.getItem("user");
@@ -30,8 +30,12 @@ export const AuthProvider = ({ children }) => { // children son los componentes 
         }
     }, [user]);
 
+    // DERIVACION DE ESTADOS PARA RUTAS PROTEGIDAS
+    const isAuthenticated = Boolean(user);
+    const isAdmin = Boolean(user && (user.rol === "admin" || user.role === "admin" || user.isAdmin));
+
     return (
-        <AuthContext.Provider value={{ user, login, logout }}> 
+        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}> 
             {children} 
         </AuthContext.Provider>
     );

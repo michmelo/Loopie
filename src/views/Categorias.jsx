@@ -1,122 +1,58 @@
 // IMPORTS
-import Navbar from "../components/Navbar";              // Componente de barra de navegación
+import Navbar from "../components/Navbar";
+import PageHeader from "../components/PageHeader";
+import CategoryCard from "../components/categoria/CategoryCard";
+import AppFooter from "../components/Footer";
 
-// COMPONENTE CATEGORÍAS
-/**
- * Página de categorías de la aplicación Loopie
- * Muestra todas las categorías de productos disponibles
- */
+// DATOS DEMO
+const categoriesData = [
+    { id: 1, title: "Jeans", description: "Clásicos, skinny y wide leg.", icon: "👖" },
+    { id: 2, title: "Poleras", description: "Algodón, estampadas y básicas.", icon: "👕" },
+    { id: 3, title: "Chaquetas", description: "Denim, cuero y abrigos.", icon: "🧥" },
+    { id: 4, title: "Vestidos", description: "Casuales, de fiesta y maxi.", icon: "👗" },
+    { id: 5, title: "Zapatos", description: "Zapatillas, botines y sandalias.", icon: "👟" },
+    { id: 6, title: "Accesorios", description: "Joyería, gorros y bufandas.", icon: "🧣" },
+    { id: 7, title: "Deporte", description: "Ropa técnica y cómoda.", icon: "🏃‍♀️" },
+    { id: 8, title: "Ofertas", description: "Los mejores precios del mes.", icon: "🏷️" },
+];
+
+// Manejo de navegación
+// TODO: CAMBIAR POR useNavigate Y ROUTING REAL SEGÚN DATA DE CATEGORIAS
+const handleCategoryClick = (categoryTitle) => {
+    console.log(`Navegando a la categoría: ${categoryTitle}`);
+    // useNavigate('/categoria/' + categoryTitle)
+};
+
 export default function Categorias() {
     // RENDER
     return (
-        <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)" }}>
-            {/* Barra de navegación */}
+        <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
             <Navbar />
             
-            {/* Contenido principal */}
-            <main className="container-fluid" style={{ padding: "2rem" }}>
+            {/* CONTENIDO */}
+            <main className="container-fluid" style={{ padding: "2rem", flexGrow: 1 }}>
                 <div className="container">
-                    {/* Header de la página */}
-                    <div className="row mb-4">
-                        <div className="col-12">
-                            <h1 style={{
-                                color: "var(--primary-color)",
-                                fontSize: "2.5rem",
-                                fontWeight: "700",
-                                marginBottom: "1rem",
-                                textAlign: "center"
-                            }}>
-                                Categorías
-                            </h1>
-                            <p style={{
-                                color: "var(--secondary-color)",
-                                fontSize: "1.1rem",
-                                textAlign: "center",
-                                maxWidth: "600px",
-                                margin: "0 auto"
-                            }}>
-                                Explora nuestros productos organizados por categorías
-                            </p>
-                        </div>
-                    </div>
+                    
+                    <PageHeader 
+                        title="Categorías"
+                        description="Explora nuestras prendas organizadas por categorías"
+                    />
 
-                    {/* Grid de categorías */}
+                    {/* GRID DE CATEGORIAS */}
                     <div className="row">
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 1</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 2</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 3</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 4</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 5</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 6</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 7</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
-                        
-                        <div className="col-12 col-md-6 col-lg-3 mb-4">
-                            <div className="card-custom text-center">
-                                <div style={{ fontSize: "3rem", marginBottom: "1rem" }}></div>
-                                <h3>Categoria 8</h3>
-                                <p>Descripcion</p>
-                                <button className="btn-custom">Explorar</button>
-                            </div>
-                        </div>
+                        {categoriesData.map(category => (
+                            <CategoryCard
+                                id={category.id}
+                                title={category.title}
+                                description={category.description}
+                                icon={category.icon}
+                                onClick={() => handleCategoryClick(category.title)}
+                            />
+                        ))}
                     </div>
                 </div>
             </main>
+            <AppFooter />
         </div>
     );
 }
-
