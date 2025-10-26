@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
+    // Recuperar sesión guardada
     const [user, setUser] = useState(() => {
         try {
             const stored = localStorage.getItem("user");
@@ -11,19 +12,23 @@ export const AuthProvider = ({ children }) => {
         }
 });
 
+    // Inicio sesión (usuario activo)
     const login = (userData) => {
         setUser(userData);
     }
+
+    // Cierre sesión (eliminar usuario activo)
     const logout = () => {
         setUser(null);
     }
     
+    // Sincroniza estado usuario con localStorage
     useEffect(() => {
         try {
             if (user) {
-                localStorage.setItem("user", JSON.stringify(user));
+                localStorage.setItem("usuarioActivo", JSON.stringify(user));
             } else {
-                localStorage.removeItem("user");
+                localStorage.removeItem("usuarioActivo");
             }
         } catch (err) { 
             console.error("Error accediendo al localStorage", err);
@@ -32,7 +37,7 @@ export const AuthProvider = ({ children }) => {
 
     // DERIVACION DE ESTADOS PARA RUTAS PROTEGIDAS
     const isAuthenticated = Boolean(user);
-    const isAdmin = Boolean(user && (user.rol === "admin" || user.role === "admin" || user.isAdmin));
+    const isAdmin = Boolean(user && (user.rol === "admin" || user.isAdmin));
 
     return (
         <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}> 

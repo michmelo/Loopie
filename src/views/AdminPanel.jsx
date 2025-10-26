@@ -11,7 +11,7 @@ const statsData = [
     { title: "Usuarios", value: "473", buttonText: "Gestionar" },
     { title: "Productos", value: "597", buttonText: "Gestionar" },
     { title: "Pedidos", value: "389", buttonText: "Ver Pedidos" },
-    { title: "Ventas", value: "$4.567.890", buttonText: "Ver Reportes" },
+    { title: "Ventas", value: "$5.385.890", buttonText: "Ver Reportes" },
 ];
 
 // ADMIN PANEL

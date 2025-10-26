@@ -11,6 +11,7 @@ import Checkout from "./views/Checkout";
 import AdminPanel from "./views/AdminPanel";
 import Profile from "./views/Profile";
 import { AuthProvider } from "./context/AuthProvider";
+import { CartProvider } from "./context/CartProvider";
 import { useAuth } from "./hooks/useAuth";
 import StoreDashboard from "./views/StoreDashboard";
 import AccessDenied from "./views/AccessDenied";
@@ -78,9 +79,13 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <CartProvider>
+        <PedidoProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </PedidoProvider>
+      </CartProvider>
     </AuthProvider>
   );
 }
