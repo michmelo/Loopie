@@ -37,7 +37,7 @@ export default function AdminPanel() {
                         {/* ESTADISTICAS */}
                         {statsData.map((stat, index) => (
                             <StatCard 
-                                key={index}
+                                id={index}
                                 title={stat.title}
                                 value={stat.value}
                                 buttonText={stat.buttonText}

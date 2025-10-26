@@ -49,7 +49,7 @@ function UserProfileView({ currentUser, onLogout }) {
                     
                     <PageHeader 
                         title="Mi Perfil"
-                        description={`Bienvenido de vuelta, ${currentUser.nombre}. Gestiona tus datos y pedidos.`}
+                        description={`Bienvenido de vuelta, ${currentUser.nombre}.`}
                     />
 
                     <ProfileInfoCard user={currentUser} />
@@ -65,9 +65,8 @@ function UserProfileView({ currentUser, onLogout }) {
 
 
 /**
- * Componente `Profile` - selecciona la vista según el rol del usuario.
- * Si el usuario tiene `rol` === 'tienda' (o 'store') muestra la vista de tienda,
- * en caso contrario la vista de usuario comprador.
+ * Componente 'Profile' selecciona la vista según el rol del usuario.
+ * Si el usuario tiene 'rol' === 'tienda' muestra la vista de tienda, en caso contrario la vista de usuario comprador
  */
 export default function Profile() {
     const { user, logout } = useAuth();
@@ -79,15 +78,13 @@ export default function Profile() {
         return null;
     }
 
-    // Determinar rol (compatibilidad con 'rol' o 'role')
+    // Determinar rol (compatibilidad con 'rol' o 'role' debido a que aún no se implementa data)
     const role = user?.rol || user?.role || genericMockUser.rol;
     const currentUser = user || genericMockUser;
 
-    // Si es tienda, renderizamos la vista de tienda (component separado)
     if (role === "tienda" || role === "store") {
         return <StoreProfile user={currentUser} logout={logout} />;
     }
 
-    // Por defecto: perfil de usuario comprador
     return <UserProfileView currentUser={currentUser} onLogout={logout} />;
 }

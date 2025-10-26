@@ -37,14 +37,14 @@ export default function ProductTable({ products }) {
                         <th style={thStyle}>ID</th>
                         <th style={thStyle}>Nombre</th>
                         <th style={thStyle}>Stock</th>
-                        <th style={thStyle}>Precio Bruto (CLP)</th>
+                        <th style={thStyle}>Precio</th>
                         <th style={thStyle}>Categoría</th>
                         <th style={thStyle}>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {products.map((product) => (
-                        <tr key={product.id} style={{ borderBottom: '1px solid var(--accent-color)' }}>
+                        <tr id={product.id} style={{ borderBottom: '1px solid var(--accent-color)' }}>
                             <td style={thTdStyle}>{product.id}</td>
                             <td style={thTdStyle}>{product.name}</td>
                             <td style={{ ...thTdStyle, fontWeight: 'bold', color: product.stock < 10 ? 'var(--pink-accent)' : 'var(--primary-color)' }}>

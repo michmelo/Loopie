@@ -44,7 +44,7 @@ function OrderCard({ order }) {
             <hr />
             <ul style={{ paddingLeft: '1rem', marginTop: 0 }}>
                 {order.items.map((it) => (
-                    <li key={it.id} style={{ marginBottom: '0.25rem' }}>{it.qty} × {it.name} <span style={{ color: 'var(--muted-color)' }}> — {it.price}</span></li>
+                    <li id={it.id} style={{ marginBottom: '0.25rem' }}>{it.qty} × {it.name} <span style={{ color: 'var(--muted-color)' }}> — {it.price}</span></li>
                 ))}
             </ul>
 
@@ -78,7 +78,7 @@ export default function Pedidos() {
                                     <Link to="/tiendas" className="btn-custom">Ir a Tiendas</Link>
                                 </div>
                             ) : (
-                                mockOrders.map((o) => <OrderCard key={o.id} order={o} />)
+                                mockOrders.map((o) => <OrderCard id={o.id} order={o} />)
                             )}
                         </div>
 

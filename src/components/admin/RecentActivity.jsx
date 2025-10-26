@@ -18,7 +18,7 @@ export default function RecentActivity() {
                 <div style={{ maxHeight: "300px", overflowY: "auto" }}>
                     {activities.map((activity, index) => (
                         <div 
-                            key={index}
+                            id={index}
                             style={{
                                 padding: "0.75rem",
                                 borderBottom: "1px solid var(--accent-color)",

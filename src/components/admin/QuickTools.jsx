@@ -17,7 +17,7 @@ export default function QuickTools() {
                 
                 <div className="d-grid gap-2">
                     {tools.map((tool, index) => (
-                        <button key={index} className="btn-custom">
+                        <button id={index} className="btn-custom">
                             {tool}
                         </button>
                     ))}
