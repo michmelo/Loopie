@@ -1,6 +1,6 @@
-//funcion que conecte al backend, debe ser anonima
+//funcion que conecta al backend, debe ser anonima
 
-export const obtenerUsuarios = async () => { //debe ser asincrona para usar await
+export const obtenerUsuarios = async () => {
     
     try{
         const data = await fetch("https://demo5015098.mockable.io/api/v1/users/all")
