@@ -3,27 +3,44 @@ import Navbar from "../components/Navbar";
 import PageHeader from "../components/PageHeader";
 import CategoryCard from "../components/categoria/CategoryCard";
 import AppFooter from "../components/Footer";
-
-// DATOS DEMO
-const categoriesData = [
-    { id: 1, title: "Jeans", description: "Clásicos, skinny y wide leg.", icon: "👖" },
-    { id: 2, title: "Poleras", description: "Algodón, estampadas y básicas.", icon: "👕" },
-    { id: 3, title: "Chaquetas", description: "Denim, cuero y abrigos.", icon: "🧥" },
-    { id: 4, title: "Vestidos", description: "Casuales, de fiesta y maxi.", icon: "👗" },
-    { id: 5, title: "Zapatos", description: "Zapatillas, botines y sandalias.", icon: "👟" },
-    { id: 6, title: "Accesorios", description: "Joyería, gorros y bufandas.", icon: "🧣" },
-    { id: 7, title: "Deporte", description: "Ropa técnica y cómoda.", icon: "🏃‍♀️" },
-    { id: 8, title: "Ofertas", description: "Los mejores precios del mes.", icon: "🏷️" },
-];
-
-// Manejo de navegación
-// TODO: CAMBIAR POR useNavigate Y ROUTING REAL SEGÚN DATA DE CATEGORIAS
-const handleCategoryClick = (categoryTitle) => {
-    console.log(`Navegando a la categoría: ${categoryTitle}`);
-    // useNavigate('/categoria/' + categoryTitle)
-};
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../data/api/api";
+import { useNavigate } from "react-router-dom";
 
 export default function Categorias() {
+    const [categories, setCategories] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await getAllProducts();
+                let products = [];
+                if (Array.isArray(res)) products = res;
+                else if (res?.products) products = res.products;
+
+                const map = products.reduce((acc, p) => {
+                    const cat = p.categoria || p.category || 'Otros';
+                    if (!acc[cat]) acc[cat] = { title: cat, count: 0 };
+                    acc[cat].count += 1;
+                    return acc;
+                }, {});
+
+                const list = Object.values(map).map((c, i) => ({ id: i + 1, title: c.title, description: `${c.count} productos`, icon: '🛍️' }));
+                if (mounted) setCategories(list);
+            } catch (err) {
+                console.error('Categorias: error cargando productos', err);
+                if (mounted) setCategories([]);
+            }
+        })();
+        return () => { mounted = false; };
+    }, []);
+
+    const handleCategoryClick = (categoryTitle) => {
+        navigate(`/categorias/${encodeURIComponent(categoryTitle)}`);
+    };
+
     // RENDER
     return (
         <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
@@ -40,15 +57,20 @@ export default function Categorias() {
 
                     {/* GRID DE CATEGORIAS */}
                     <div className="row">
-                        {categoriesData.map(category => (
-                            <CategoryCard
-                                id={category.id}
-                                title={category.title}
-                                description={category.description}
-                                icon={category.icon}
-                                onClick={() => handleCategoryClick(category.title)}
-                            />
-                        ))}
+                        {categories.length === 0 ? (
+                            <div className="card-custom">No hay categorías disponibles.</div>
+                        ) : (
+                            categories.map(category => (
+                                <CategoryCard
+                                    key={category.id}
+                                    id={category.id}
+                                    title={category.title}
+                                    description={category.description}
+                                    icon={category.icon}
+                                    onClick={() => handleCategoryClick(category.title)}
+                                />
+                            ))
+                        )}
                     </div>
                 </div>
             </main>

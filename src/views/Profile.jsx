@@ -8,19 +8,10 @@ import ActionPanel from "../components/perfil/ActionPanel";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import StoreProfile from "./StoreProfile";
+import { useEffect, useState } from "react";
+import { getAllUsers } from "../data/api/api";
 
-// TODO: REEMPLAZAR MOCK POR DATOS REALES
-// DATOS DEMO
-const genericMockUser = {
-    id: "U0234",
-    nombre: "Usuario",
-    apellido: "Testeo",
-    user: "us_testeo",
-    email: "user@looppie.cl",
-    password: "ustesteo123",
-    rol: "usuario",
-    direccion: "Calle Wallaby 42, Valdivia",
-};
+// Nota: en lugar de usar un mock local, resolvemos datos de usuario desde la API cuando sea posible
 
 
 /* VISTA PERFIL USUARIO (DEFAULT) */
@@ -71,20 +62,42 @@ function UserProfileView({ currentUser, onLogout }) {
 export default function Profile() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [resolvedUser, setResolvedUser] = useState(user || null);
 
-    if (!user) {
-        // Redirigir al login si no hay usuario
-        navigate("/login");
-        return null;
-    }
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+            return;
+        }
 
-    // Determinar rol (compatibilidad con 'rol' o 'role' debido a que aún no se implementa data)
-    const role = user?.rol || user?.role || genericMockUser.rol;
-    const currentUser = user || genericMockUser;
+        let mounted = true;
+
+        // Si el usuario no tiene nombre/apellido, intentar resolver datos desde la API de usuarios
+        (async () => {
+            try {
+                // Llamada a la API que puede devolver un array o { users: [] }
+                const res = await getAllUsers();
+                let usersList = [];
+                if (Array.isArray(res)) usersList = res;
+                else if (res?.users) usersList = res.users;
+
+                const match = usersList.find((u) => String(u.id) === String(user.id) || u.username === user.user || u.email === user.email);
+                if (mounted && match) {
+                    setResolvedUser((prev) => ({ ...prev, ...match }));
+                }
+            } catch (err) {
+                console.warn("Profile: no se pudieron resolver usuarios desde API", err);
+            }
+        })();
+
+        return () => { mounted = false; };
+    }, [user, navigate]);
+
+    const role = resolvedUser?.rol || resolvedUser?.role;
 
     if (role === "tienda" || role === "store") {
-        return <StoreProfile user={currentUser} logout={logout} />;
+        return <StoreProfile user={resolvedUser} logout={logout} />;
     }
 
-    return <UserProfileView currentUser={currentUser} onLogout={logout} />;
+    return <UserProfileView currentUser={resolvedUser} onLogout={logout} />;
 }

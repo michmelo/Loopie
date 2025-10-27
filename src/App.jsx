@@ -6,12 +6,16 @@ import Register from "./views/Register";
 import Tiendas from "./views/Tiendas";
 import Ofertas from "./views/Ofertas";
 import Categorias from "./views/Categorias";
+import ProductDetail from "./views/ProductDetail";
+import StoreProfile from "./views/StoreProfile";
+import AllProducts from "./views/AllProducts";
 import Carrito from "./views/Carrito";
 import Checkout from "./views/Checkout";
 import AdminPanel from "./views/AdminPanel";
 import Profile from "./views/Profile";
 import { AuthProvider } from "./context/AuthProvider";
 import { CartProvider } from "./context/CartProvider";
+import { PedidoProvider } from "./context/PedidoProvider";
 import { useAuth } from "./hooks/useAuth";
 import StoreDashboard from "./views/StoreDashboard";
 import AccessDenied from "./views/AccessDenied";
@@ -38,7 +42,10 @@ function AppRoutes() {
       {/* Rutas públicas */}
       <Route path="/" element={<HomePage />} />
       <Route path="/tiendas" element={<Tiendas />} />
+      <Route path="/tiendas/:id" element={<StoreProfile />} />
+      <Route path="/productos" element={<AllProducts />} />
       <Route path="/ofertas" element={<Ofertas />} />
+      <Route path="/producto/:id" element={<ProductDetail />} />
       <Route path="/categorias" element={<Categorias />} />
       <Route path="/sobre-nosotras" element={<SobreNosotras />} />
       <Route path="/contacto" element={<Contacto />} />

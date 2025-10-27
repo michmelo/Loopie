@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CartContext } from "./CartContext";
-import { getCart, saveCart, clearCart } from "../services/localStorageService";
+import { getCart, saveCart, clearCart } from "../data/localStorageService";
 import { useAuth } from "../hooks/useAuth";
 
 // Carrito de compras con persistencia en localStorage por usuario.

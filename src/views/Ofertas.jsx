@@ -3,22 +3,9 @@ import Navbar from "../components/Navbar";
 import AppFooter from "../components/Footer";
 import PageHeader from "../components/PageHeader";
 import OfferCard from "../components/oferta/OfferCard";
-
-// DATOS DEMO OFERTAS
-// TODO: CAMBIAR POR DATA MOCKUP
-const offersData = [
-    { id: 1, discount: "50% OFF", title: "Jeans Seleccionados", description: "Gran descuento en modelos Slim y Skinny.", target: "/ofertas/jeans" },
-    { id: 2, discount: "3x2 en Básicos", title: "Poleras y Camisetas", description: "Lleva 3 y paga solo 2 en toda la línea básica.", target: "/ofertas/basicos" },
-    { id: 3, discount: "Envío GRATIS", title: "Abrigos y Chaquetas", description: "Envío sin costo en pedidos superiores a $50.000.", target: "/ofertas/abrigos" },
-];
-
-// Navegación (simulación)
-// TODO: REEMPLAZAR POR useNavigate y ruta correcta
-const handleViewOffer = (offerTitle) => {
-    console.log(`Ver detalles de la oferta: ${offerTitle}`);
-    // useNavigate('/ofertas/' + offerId)
-};
-
+import { useEffect, useState } from "react";
+import { getAllProducts } from "../data/api/api";
+import { useNavigate } from "react-router-dom";
 
 // COMPONENTE OFERTAS
 /**
@@ -26,6 +13,43 @@ const handleViewOffer = (offerTitle) => {
  * Muestra las mejores ofertas y descuentos disponibles
  */
 export default function Ofertas() {
+    const [offers, setOffers] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await getAllProducts();
+                let products = [];
+                if (Array.isArray(res)) products = res;
+                else if (res?.products) products = res.products;
+
+                const list = products
+                    .filter(p => p.enOferta)
+                    .map(p => ({
+                        id: p.id,
+                        discount: p.precioOferta ? `${Math.round((1 - (p.precioOferta / p.precio)) * 100)}% OFF` : 'Oferta',
+                        title: p.nombre || p.title || `Producto ${p.id}`,
+                        description: p.descripcion || '',
+                        target: `/producto/${p.id}`,
+                        productId: p.id,
+                    }));
+
+                if (mounted) setOffers(list);
+            } catch (err) {
+                console.error('Ofertas: error cargando productos', err);
+                if (mounted) setOffers([]);
+            }
+        })();
+        return () => { mounted = false; };
+    }, []);
+
+    const handleViewOffer = (productId) => {
+        // detalle producto (si existe la ruta)
+        navigate(`/producto/${productId}`);
+    };
+
     // RENDER
     return (
         <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
@@ -40,15 +64,20 @@ export default function Ofertas() {
                     />
 
                     <div className="row">
-                        {offersData.map(offer => (
-                            <OfferCard
-                                id={offer.id}
-                                discount={offer.discount}
-                                title={offer.title}
-                                description={offer.description}
-                                onClick={() => handleViewOffer(offer.title)}
-                            />
-                        ))}
+                        {offers.length === 0 ? (
+                            <div className="card-custom">No hay ofertas disponibles.</div>
+                        ) : (
+                            offers.map(offer => (
+                                <OfferCard
+                                    key={offer.id}
+                                    id={offer.id}
+                                    discount={offer.discount}
+                                    title={offer.title}
+                                    description={offer.description}
+                                    onClick={() => handleViewOffer(offer.productId)}
+                                />
+                            ))
+                        )}
                     </div>
                 </div>
             </main>

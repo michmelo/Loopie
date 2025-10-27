@@ -42,11 +42,7 @@ export default function ProductImageGallery({ imageUrl, productName }) {
                 {content}
             </div>
             
-            {/* Galería de miniaturas */}
-            <div className="d-flex gap-2 mt-2">
-                <div style={{ width: '60px', height: '60px', backgroundColor: 'var(--accent-color)', borderRadius: 'var(--border-radius-sm)' }}></div>
-                <div style={{ width: '60px', height: '60px', backgroundColor: 'var(--secondary-color)', borderRadius: 'var(--border-radius-sm)' }}></div>
-            </div>
+            {/* Antes aquí había swatches/miniaturas de color. Se eliminan para mostrar solo la imagen principal. */}
         </div>
     );
 }

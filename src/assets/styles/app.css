@@ -143,6 +143,13 @@ p {
   border: 1px solid var(--accent-color);        /* Borde sutil */
 }
 
+/* Descripción del producto en panel de información */
+.product-description {
+  font-size: 0.95rem;
+  margin: 0.5rem 0 1rem;
+  color: #4b4b4b;
+}
+
 /* UTILIDADES */
 .text-center { text-align: center; }
 .text-left { text-align: left; }

@@ -3,28 +3,8 @@ import AppFooter from "../components/Footer";
 import PageHeader from "../components/PageHeader";
 import OrderSummary from "../components/carrito/OrderSummary";
 import { Link } from "react-router-dom";
-
-const mockOrders = [
-    {
-        id: "O-1001",
-        date: "2025-10-10",
-        total: "45.990",
-        status: "Enviado",
-        items: [
-            { id: "P001", name: "Jeans Skinny Azul", cant: 1, precio: "34.990" },
-            { id: "P002", name: "Calcetines", cant: 2, precio: "5.500" },
-        ],
-    },
-    {
-        id: "O-1002",
-        date: "2025-09-28",
-        total: "12.990",
-        status: "Pendiente",
-        items: [
-            { id: "P010", name: "Polera Algodón Negra", cant: 1, precio: "12.990" },
-        ],
-    },
-];
+import { usePedidos } from "../hooks/usePedidos";
+import { formatToCLP } from "../utils/price";
 
 // PEDIDO INDIVIDUAL
 function OrderCard({ order }) {
@@ -32,20 +12,25 @@ function OrderCard({ order }) {
         <div className="card-custom" style={{ marginBottom: '1rem', padding: '1rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                    <strong>{order.id}</strong>
-                    <div style={{ color: 'var(--muted-color)' }}>{order.date}</div>
+                    <strong>{String(order.id)}</strong>
+                    <div style={{ color: 'var(--muted-color)' }}>{order.fecha || order.date}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontWeight: '600' }}>{order.total}</div>
-                    <div style={{ color: order.status === 'Enviado' ? 'green' : '#a63a3a' }}>{order.status}</div>
+                    <div style={{ fontWeight: '600' }}>{typeof order.total === 'number' ? formatToCLP(order.total) : order.total}</div>
+                    <div style={{ color: order.estado === 'Enviado' || order.estado === 'pagado' ? 'green' : '#a63a3a' }}>{order.estado || order.status}</div>
                 </div>
             </div>
 
             <hr />
             <ul style={{ paddingLeft: '1rem', marginTop: 0 }}>
-                {order.items.map((it) => (
-                    <li id={it.id} style={{ marginBottom: '0.25rem' }}>{it.qty} × {it.name} <span style={{ color: 'var(--muted-color)' }}> — {it.price}</span></li>
-                ))}
+                {Array.isArray(order.items) && order.items.map((it) => {
+                    const qty = it.cant || it.qty || 1;
+                    const name = it.name || it.nombre || it.title || 'Producto';
+                    const price = typeof it.precio === 'number' ? formatToCLP(it.precio) : (it.precio || it.price || '—');
+                    return (
+                        <li key={it.id || name} style={{ marginBottom: '0.25rem' }}>{qty} × {name} <span style={{ color: 'var(--muted-color)' }}> — {price}</span></li>
+                    );
+                })}
             </ul>
 
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -62,6 +47,8 @@ function OrderCard({ order }) {
 
 // HISTORIAL DE PEDIDOS
 export default function Pedidos() {
+    const { orders } = usePedidos();
+
     return (
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <Navbar />
@@ -72,13 +59,13 @@ export default function Pedidos() {
 
                     <div className="row">
                         <div className="col-12 col-lg-8">
-                            {mockOrders.length === 0 ? (
+                            {(!orders || orders.length === 0) ? (
                                 <div className="card-custom" style={{ padding: '1rem' }}>
                                     <p>No tienes pedidos aún. Cuando compres, aparecerán aquí.</p>
                                     <Link to="/tiendas" className="btn-custom">Ir a Tiendas</Link>
                                 </div>
                             ) : (
-                                mockOrders.map((o) => <OrderCard id={o.id} order={o} />)
+                                orders.map((o) => <OrderCard key={o.id} order={o} />)
                             )}
                         </div>
 

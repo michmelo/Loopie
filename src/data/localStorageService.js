@@ -117,3 +117,29 @@ export function clearOrders(userId) {
     console.error("Error limpiando pedidos:", err);
   }
 }
+
+/* USUARIOS (registro local) */
+const USERS_KEY = "usuariosLocal";
+
+// Obtener usuarios registrados localmente
+export function getStoredUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+  } catch (err) {
+    console.error("getStoredUsers:", err);
+    return [];
+  }
+}
+
+// Guardar un usuario nuevo en el almacenamiento local
+export function saveStoredUser(user) {
+  try {
+    const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+    users.push(user);
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    return true;
+  } catch (err) {
+    console.error("saveStoredUser:", err);
+    return false;
+  }
+}
