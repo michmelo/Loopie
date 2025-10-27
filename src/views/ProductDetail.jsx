@@ -4,80 +4,83 @@ import AppFooter from "../components/Footer";
 import ProductImageGallery from "../components/products/ProductImageGallery";
 import ProductInfoPanel from "../components/products/ProductInfoPanel";
 import { parseCLP, formatToCLP } from "../utils/price";
+import { useCart } from "../hooks/useCart";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getAllProducts } from "../data/api/api";
 
-
-// DEMO DATOS
-const mockProduct = {
-    id: 101,
-    name: "Vestido Midi Estampado",
-    precio: "10.500",
-    descr: "Vestido midi de tela ligera con estampado floral. Perfecto para primavera/verano. Incluye ajuste elástico en la cintura y cuello en V.",
-    cant: 1,
-    imageUrl: "/images/vestido.jpg",
-};
-
-// Parseo de precio
-const precioNum = parseCLP(mockProduct.precio);
-
-const productDetails = {
-    ...mockProduct,
-    precioNumero: precioNum,
-    precioFormateado: formatToCLP(precioNum),
-};
-
-
-// DETALLE PRODUCTO
 export default function ProductDetail() {
-    
-    // FUNCION PARA AGREGAR AL CARRITO
-    const handleAddToCart = (product) => {
-        try {
-            const KEY = "cart";
-            const raw = localStorage.getItem(KEY);
-            const cart = raw ? JSON.parse(raw) : [];
+    const { id } = useParams();
+    const [product, setProduct] = useState(null);
+    const { addToCart } = useCart();
 
-            const itemToAdd = {
-                ...product,
-                cant: 1,
-            };
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await getAllProducts();
+                let products = [];
+                if (Array.isArray(res)) products = res;
+                else if (res?.products) products = res.products;
 
-            // Revisar duplicados (como es ropa usada es solo 1 ítem por producto)
-            const exists = cart.some((p) => p.id === itemToAdd.id);
-            if (!exists) {
-                cart.push(itemToAdd);
-                localStorage.setItem(KEY, JSON.stringify(cart));
+                const found = products.find(p => String(p.id) === String(id));
+                if (mounted) setProduct(found || null);
+            } catch (err) {
+                console.error('ProductDetail: error cargando productos', err);
+                if (mounted) setProduct(null);
             }
+        })();
+        return () => { mounted = false; };
+    }, [id]);
 
-            return cart;
-        } catch (err) {
-            console.error("Error al actualizar el carrito:", err);
-            return null;
-        }
+    const handleAddToCart = (prod) => {
+        const item = { id: prod.id, name: prod.nombre || prod.name || prod.title, precio: prod.precio || prod.price || 0, cant: 1 };
+        addToCart(item);
     };
-    // RENDER
+
+    if (!product) {
+        return (
+            <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+                <Navbar />
+                <main className="container-fluid" style={{ padding: "2rem", flexGrow: 1 }}>
+                    <div className="container">
+                        <div className="card-custom">Producto no encontrado o cargando...</div>
+                    </div>
+                </main>
+                <AppFooter />
+            </div>
+        );
+    }
+
+    const precioNum = parseCLP(product.precio || product.price);
+    const productDetails = {
+        id: product.id,
+        name: product.nombre || product.name || product.title,
+        precioNumero: precioNum,
+        precioFormateado: formatToCLP(precioNum),
+        descr: product.descripcion || product.descr || '',
+        cant: product.stock ? 1 : 0,
+        imageUrl: product.imagen || product.imageUrl || '',
+    };
+
     return (
         <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
             <Navbar />
-            
             <main className="container-fluid" style={{ padding: "2rem", flexGrow: 1 }}>
                 <div className="container">
-                                        
                     <div className="row">
-                        {/* IZQUIERDA*/}
                         <ProductImageGallery 
                             imageUrl={productDetails.imageUrl} 
                             productName={productDetails.name} 
                         />
 
-                        {/* DERECHA */}
                         <ProductInfoPanel 
                             product={productDetails}
-                            onAddToCart={handleAddToCart}
+                            onAddToCart={() => handleAddToCart(product)}
                         />
                     </div>
                 </div>
             </main>
-            
             <AppFooter />
         </div>
     );

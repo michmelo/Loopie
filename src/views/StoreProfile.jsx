@@ -5,31 +5,69 @@ import ProfileInfoCard from "../components/perfil/ProfileInfoCard";
 import ActionPanel from "../components/perfil/ActionPanel";
 import ProductTable from "../components/products/ProductTable";
 import { Link, useNavigate } from "react-router-dom";
-
-// DATOS DEMO
-const mockProducts = [
-    { id: 'P001', name: 'Jeans Skinny Azul', stock: 45, price: '34.990', category: 'Jeans' },
-    { id: 'P002', name: 'Polera Algodón Negra', stock: 8, price: '12.990', category: 'Poleras' },
-    { id: 'P003', name: 'Chaqueta Denim Clásica', stock: 21, price: '59.990', category: 'Chaquetas' },
-    { id: 'P004', name: 'Vestido Floral Verano', stock: 3, price: '29.990', category: 'Vestidos' },
-    { id: 'P005', name: 'Zapatillas Urbanas', stock: 12, price: '45.990', category: 'Zapatos' },
-];
+import { useEffect, useState } from "react";
+import { useCart } from "../hooks/useCart";
+import { getAllProducts } from "../data/api/api";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 /**
  * Vista de perfil para tiendas.
  */
 
-export default function StoreProfile({ user, logout }) {
+export default function StoreProfile() {
     const navigate = useNavigate();
+    const { id: storeId } = useParams();
+    const { user, logout, isAdmin } = useAuth();
 
-    if (!user) {
-        navigate("/login");
-        return null;
-    }
+    const isStore = Boolean(user && (user.rol === "tienda" || user.role === "store"));
+
+    // Protege la vista: solo usuarios con rol tienda (o admin) pueden acceder
+    useEffect(() => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+        if (!isStore && !isAdmin) {
+            navigate('/no-auth');
+            return;
+        }
+    }, [user, isAdmin, isStore, navigate]);
+
+    const [products, setProducts] = useState([]);
+    const { addToCart } = useCart();
+
+    useEffect(() => {
+        let mounted = true;
+        
+        (async () => {
+            try {
+                const res = await getAllProducts();
+                let list = [];
+                if (Array.isArray(res)) list = res;
+                if (mounted) setProducts(list);
+            } catch (err) {
+                console.error('StoreProfile: error cargando productos', err);
+                if (mounted) setProducts([]);
+            }
+        })();
+
+        return () => { mounted = false; };
+    }, []);
+
+    // Allow public view of a store's products. If no authenticated user, we still show products.
 
     const handleLogout = () => {
         logout?.();
         navigate("/");
+    };
+
+    const handleAddFirstProduct = () => {
+        if (!products || products.length === 0) return;
+        const p = products[0];
+        const item = { id: p.id || `p-${Date.now()}`, name: p.name || p.title || 'Producto', precio: p.precio || p.price || 0, cant: 1 };
+        addToCart(item);
+        console.log('Producto agregado al carrito desde StoreProfile:', item);
     };
 
     return (
@@ -38,13 +76,16 @@ export default function StoreProfile({ user, logout }) {
 
             <main className="container-fluid" style={{ padding: "2rem", flexGrow: 1 }}>
                 <div className="container">
-                    <PageHeader title="Perfil de Tienda" description={`Panel de gestión para ${user.nombre || 'su tienda'}.`} />
+                    <PageHeader title="Perfil de Tienda" description={`Productos para la tienda ${storeId || (user?.nombre || 'su tienda')}.`} />
 
                     <div className="row">
                         <div className="col-12 col-md-6">
                             <ProfileInfoCard user={user} />
                             <div style={{ marginTop: '1rem' }}>
                                 <ActionPanel handleLogout={handleLogout} />
+                            </div>
+                            <div style={{ marginTop: '0.5rem' }}>
+                                <button className="btn-custom" onClick={handleAddFirstProduct}>Agregar primer producto al carrito</button>
                             </div>
                         </div>
 
@@ -65,8 +106,8 @@ export default function StoreProfile({ user, logout }) {
                                     </button>
                                 </div>
 
-                                {/* TABLA DE PRODUCTOS */}
-                                <ProductTable products={mockProducts} />
+                                {/* TABLA DE PRODUCTOS (filtrada por tienda si corresponde) */}
+                                <ProductTable products={products.filter(p => String(p.tienda || p.store || '') === String(storeId || ''))} />
                             </div>
                         </div>
                     </div>

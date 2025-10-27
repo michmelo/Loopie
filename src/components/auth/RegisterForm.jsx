@@ -8,8 +8,8 @@ export default function RegisterForm({ formData, handleInputChange, handleRegist
     const formFields = [
         { name: "username", type: "text", placeholder: "Nombre de usuario" },
         { name: "email", type: "email", placeholder: "Correo electrónico" },
-        { name: "nombre", type: "text", placeholder: "Nombre" },
-        { name: "apellido", type: "text", placeholder: "Apellido" },
+        { name: "firstName", type: "text", placeholder: "Nombre" },
+        { name: "lastName", type: "text", placeholder: "Apellido" },
         { name: "password", type: "password", placeholder: "Contraseña (mínimo 3 caracteres)" },
         { name: "confirmPassword", type: "password", placeholder: "Confirmar contraseña" }
     ];

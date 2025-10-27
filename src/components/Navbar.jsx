@@ -149,6 +149,31 @@ export default function Navbar() {
                             </Link>
                         </li>
 
+                        {/* Pestaña Productos */}
+                        <li className="nav-item">
+                            <Link 
+                                className="nav-link" 
+                                to="/productos"
+                                style={{
+                                    color: "var(--primary-color)",
+                                    fontWeight: "500",
+                                    padding: "8px 16px",
+                                    borderRadius: "var(--border-radius-md)",
+                                    transition: "all 0.25s ease"
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.backgroundColor = "var(--light-color)";
+                                    e.target.style.color = "var(--primary-color)";
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.backgroundColor = "transparent";
+                                    e.target.style.color = "var(--primary-color)";
+                                }}
+                            >
+                                Productos
+                            </Link>
+                        </li>
+
                         {/* Pestaña Carrito */}
                         <li className="nav-item">
                             <Link 

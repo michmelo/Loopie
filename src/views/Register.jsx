@@ -1,7 +1,7 @@
 // IMPORTS 
 import { useState } from "react";                    
 import { useNavigate } from "react-router-dom";      
-import { useAuth } from "../hooks/useAuth";     
+import { useAuth } from "../hooks/useAuth";    
 import Navbar from "../components/Navbar";            
 import AppFooter from "../components/Footer";       
 import AuthFormContainer from "../components/auth/AuthFormContainer";
@@ -9,6 +9,7 @@ import RegisterForm from "../components/auth/RegisterForm";
 import AuthMessage from "../components/auth/AuthMessage";
 import AuthLink from "../components/auth/AuthLink";
 import { validateRegistrationData } from "../utils/validation";
+import { saveStoredUser } from "../data/localStorageService";
 
 
 // REGISTRO
@@ -16,10 +17,10 @@ import { validateRegistrationData } from "../utils/validation";
 export default function Register() {
     // ESTADO LOCAL
     const [formData, setFormData] = useState({
-        user: "",
+        username: "",
         email: "",
-        nombre: "",
-        apellido: "",
+        firstName: "",
+        lastName: "",
         password: "",
         confirmPassword: ""
     });
@@ -50,17 +51,26 @@ export default function Register() {
         }
 
         const nuevoUsuario = {
-            id: Date.now(), 
-            nombre: `${formData.nombre} ${formData.apellido}`,
+            id: String(Date.now()),
+            username: formData.username || formData.email.split("@")[0],
+            nombre: formData.firstName,
+            apellido: formData.lastName,
             email: formData.email,
-            rol: "usuario", 
-            direccion: "" 
+            password: formData.password,
+            rol: "usuario",
+            direccion: ""
         };
+
+        // GUARDAR LOCAL (NO HAY POST DISPONIBLE)
+        saveStoredUser(nuevoUsuario);
 
         setSuccess(true);
         
         setTimeout(() => {
-            login(nuevoUsuario);                
+            // No se pasa la contraseña por seguridad
+            const publicUser = { ...nuevoUsuario };
+            delete publicUser.password;
+            login(publicUser);
             navigate("/perfil");
         }, 1500);
     };

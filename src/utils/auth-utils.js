@@ -1,40 +1,40 @@
-// src/utils/authUtils.js
-
-import { obtenerUsuarios } from "../services/api"; 
-import { validateLoginData } from "./validation"; // Reutilizamos la validación de frontend
+import { getAllUsers } from "../data/api/api";
+import { getStoredUsers } from "../data/localStorageService";
+import { validateLoginData } from "./validation";
 
 /**
  * Procesa el intento de inicio de sesión.
- * Incluye la validación de frontend y la simulación de la búsqueda en el 'backend'.
  * * @param {string} identifier - Usuario o correo.
  * @param {string} password - Contraseña.
  * @returns {Promise<{ user: object | null, error: string | null }>} 
  */
 export async function authenticateUser(identifier, password) {
-    // 1. Validar en el Frontend (reglas de negocio simples)
     const validationError = validateLoginData(identifier, password);
     if (validationError) {
         return { user: null, error: validationError };
     }
 
-    // 2. Simulación de Llamada a la API (Lógica de backend mock)
-    const usuarios = await obtenerUsuarios();
+    const apiUsers = await getAllUsers();
+    const localUsers = getStoredUsers();
+    // combinar usuarios de API y los registrados en localStorage (los locales toman prioridad si hay mismo id)
+    const usuarios = Array.isArray(apiUsers) ? [...apiUsers] : [];
+    // añadimos los locales al final para que puedan ser encontrados también
+    if (Array.isArray(localUsers) && localUsers.length) {
+        usuarios.push(...localUsers);
+    }
 
-    // Buscar usuario por username o email
-    const user = usuarios.users.find((usr) => 
+    const user = usuarios.find((usr) =>
         usr.username === identifier || usr.email === identifier
     );
 
-    // 3. Validar si el usuario existe
     if (!user) {
         return { user: null, error: "Usuario o correo no encontrado" };
     }
 
-    // 4. Simulación de Autenticación de Contraseña
-    // Ya que no tenemos hash, solo asumimos que pasó si el user existe.
-    // Si quisieras ser más estricto, podrías añadir:
-    // if (user.password !== password) { return { user: null, error: "Contraseña incorrecta" }; }
+    // Validar contraseña (en este demo se guardan contraseñas en claro)
+    if (user.password !== password) {
+        return { user: null, error: "Contraseña incorrecta" };
+    }
 
-    // 5. Autenticación exitosa
     return { user: user, error: null };
 }

@@ -5,43 +5,50 @@ import PageHeader from "../components/PageHeader";
 import CartItem from "../components/carrito/CartItem";
 import OrderSummary from "../components/carrito/OrderSummary";
 import AppFooter from "../components/Footer";
-
-
-// formateo de precio
-const formatToCLP = (number) => '$' + number.toLocaleString('es-CL');
+import { useCart } from "../hooks/useCart";
+import { parseCLP, formatToCLP } from "../utils/price";
 
 export default function Carrito() {
-  // DATOS SIMULADOS 
-  const [cartItems, setCartItems] = useState([
-      { id: 1, name: "Jeans Slim Fit Clásico", cant: 1, precio: 13990 },
-      { id: 2, name: "Polera de Algodón Blanca", cant: 3, precio: 4990 },
-  ]);
+  // Acceso al carrito desde el provider
+  const { cart, removeFromCart, clearUserCart, total } = useCart();
+
+  // Local UI state para mensajes temporales
+  const [message, setMessage] = useState("");
 
   // ELIMINAR ITEM
   const handleRemoveItem = (itemId) => {
-      setCartItems(prevItems => prevItems.filter(item => item.id !== itemId));
+    removeFromCart(itemId);
+    setMessage("Producto eliminado del carrito");
+    setTimeout(() => setMessage(""), 1800);
   };
 
-  // CALCULOS CARRITO
+  const handleClearCart = () => {
+    clearUserCart();
+    setMessage("Carrito vaciado");
+    setTimeout(() => setMessage(""), 1800);
+  };
+
+  // CALCULOS CARRITO (usa total del provider)
   const calcularTotalesCarrito = () => {
-      const totalEnvio = 3500;
-      const subtotal = cartItems.reduce(
-      (acc, item) => acc + item.precio * item.cant,
-      0
-      );
+    const totalEnvio = 3500;
+    const subtotal = Number(total) - 0;
 
-      const total = subtotal + totalEnvio;
+    // Si total no es un número válido, calcular manualmente
+    const fallbackSubtotal = cart.reduce((acc, item) => acc + parseCLP(item.precio) * (item.cant || 1), 0);
+    const realSubtotal = Number.isFinite(subtotal) && subtotal > 0 ? subtotal : fallbackSubtotal;
 
-      return {
-      subtotal: formatToCLP(subtotal),
+    const totalFinal = realSubtotal + totalEnvio;
+
+    return {
+      subtotal: formatToCLP(realSubtotal),
       envio: formatToCLP(totalEnvio),
-      total: formatToCLP(total),
-      };
+      total: formatToCLP(totalFinal),
+    };
   };
 
   const orderTotals = calcularTotalesCarrito();
 
-return (
+  return (
         <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
       <Navbar />
 
@@ -58,18 +65,24 @@ return (
               <div className="card-custom mb-4">
                 <h3>Prendas en tu carrito</h3>
 
-                {cartItems.length > 0 ? (
-                  cartItems.map((item) => (
+                {cart && cart.length > 0 ? (
+                  cart.map((item) => (
                     <CartItem
                       id={item.id}
-                      name={item.name}
-                      cant={item.cant}
-                      precio={formatToCLP(item.precio)}
+                      name={item.name || item.nombre || item.title}
+                      cant={item.cant || 1}
+                      precio={formatToCLP(parseCLP(item.precio))}
                       onRemove={() => handleRemoveItem(item.id)}
                     />
                   ))
                 ) : (
                   <p>Tu carrito está vacío 🛒</p>
+                )}
+                {cart && cart.length > 0 && (
+                  <div style={{ marginTop: '0.75rem' }}>
+                    <button className="btn-custom" onClick={handleClearCart} style={{ backgroundColor: 'var(--secondary-color)' }}>Vaciar Carrito</button>
+                    {message && <span style={{ marginLeft: '1rem', color: 'var(--muted-color)' }}>{message}</span>}
+                  </div>
                 )}
               </div>
             </div>

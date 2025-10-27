@@ -31,7 +31,13 @@ export default function ProductInfoPanel({ product, onAddToCart, isOffer }) {
                 </h1>
 
                 <p style={{ fontSize: '1.5rem', fontWeight: '700', margin: '0.25rem 0' }}>{product.precioFormateado ?? (product.precioNumero ? `$${product.precioNumero}` : '—')}</p>
-                
+                {/* Mostrar descripción del producto si existe (soporta keys en español/inglés) */}
+                {(product.description || product.descripcion) && (
+                    <p className="mt-3 product-description" style={{ color: '#3b3b3b', lineHeight: 1.4 }}>
+                        {product.description || product.descripcion}
+                    </p>
+                )}
+
                 <button className="btn-custom" onClick={() => onAddToCart(product)} style={{ width: '100%', padding: '15px 0' }}>
                     {isOffer ? "¡Aprovechar Oferta!" : "🛍️ Agregar al Carrito"}
                 </button>
