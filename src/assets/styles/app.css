@@ -1,0 +1,185 @@
+/* VARIABLES GLOBALES */
+/* 
+ * Variables CSS para mantener consistencia la aplicación centralizando cambios de colores, tipografías y espaciado
+ */
+ :root {
+  /* PALETA DE COLORES PERSONALIZADA LOOPIE*/
+  /* Colores principales de la aplicación */
+  --primary-color: #310a31;      /* Morado oscuro - textos principales */
+  --secondary-color: #847996;    /* Gris morado - elementos secundarios */
+  --accent-color: #88b7b5;       /* Verde azulado - acentos y bordes */
+  --light-color: #a7cab1;        /* Verde claro - fondos suaves */
+  --background-color: #f4ecd6;   /* Beige claro - fondo principal */
+  --input-bg-color: #FCFCFF;     /* Blanco suave - fondo de inputs */
+  --pink-accent: #db6a8b;        /* Rosa/magenta - acentos destacados */
+  
+  /* TIPOGRAFÍA */
+  --font-family-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Escala de tamaños de fuente responsiva */
+  --font-size-xs: 0.75rem;    /* 12px - texto muy pequeño */
+  --font-size-sm: 0.875rem;   /* 14px - texto pequeño */
+  --font-size-base: 1rem;     /* 16px - texto base */
+  --font-size-lg: 1.125rem;   /* 18px - texto grande */
+  --font-size-xl: 1.25rem;    /* 20px - texto extra grande */
+  --font-size-2xl: 1.5rem;    /* 24px - títulos pequeños */
+  --font-size-3xl: 1.875rem;  /* 30px - títulos principales */
+  
+  /* ESPACIADO */
+  --spacing-xs: 0.25rem;      /* 4px - espaciado mínimo */
+  --spacing-sm: 0.5rem;       /* 8px - espaciado pequeño */
+  --spacing-md: 1rem;         /* 16px - espaciado medio */
+  --spacing-lg: 1.5rem;       /* 24px - espaciado grande */
+  --spacing-xl: 2rem;         /* 32px - espaciado extra grande */
+  --spacing-2xl: 3rem;        /* 48px - espaciado máximo */
+  
+  /* BORDES */
+  --border-radius-sm: 0.25rem;  /* 4px - bordes pequeños */
+  --border-radius-md: 0.5rem;   /* 8px - bordes medios */
+  --border-radius-lg: 0.75rem;  /* 12px - bordes grandes */
+  --border-radius-xl: 1rem;     /* 16px - bordes extra grandes */
+  
+  /* SOMBRAS */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);     /* Sombra sutil */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);   /* Sombra media */
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1); /* Sombra grande */
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1); /* Sombra extra grande */
+}
+
+/* ESTILOS GLOBALES */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--primary-color);
+  background-color: var(--background-color);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* TIPOGRAFÍA */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+  color: var(--primary-color);
+}
+
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+h5 { font-size: var(--font-size-base); }
+h6 { font-size: var(--font-size-sm); }
+
+p {
+  margin-bottom: var(--spacing-md);
+  color: var(--primary-color);
+}
+
+/* COMPONENTES GLOBALES PERSONALIZADOS */
+
+/* Botón personalizado con efectos hover */
+.btn-custom {
+  background-color: var(--accent-color);        /* Fondo verde azulado */
+  color: var(--primary-color);                  /* Texto morado oscuro */
+  border: 2px solid var(--secondary-color);     /* Borde gris morado */
+  border-radius: var(--border-radius-md);       /* Bordes redondeados */
+  padding: var(--spacing-sm) var(--spacing-lg); /* Espaciado interno */
+  font-weight: 500;                             /* Peso de fuente medio */
+  transition: all 0.25s ease;                   /* Transición suave */
+  cursor: pointer;                              /* Cursor pointer */
+}
+
+/* Efecto hover del botón con elevación */
+.btn-custom:hover {
+  background-color: var(--secondary-color);     /* Cambio de color */
+  color: var(--background-color);               /* Texto claro */
+  transform: translateY(-2px);                  /* Elevación sutil */
+  box-shadow: var(--shadow-md);                 /* Sombra para profundidad */
+}
+
+/* Campo de entrada personalizado */
+.form-control-custom {
+  border: 2px solid var(--accent-color);        /* Borde verde azulado */
+  border-radius: var(--border-radius-md);       /* Bordes redondeados */
+  padding: var(--spacing-sm) var(--spacing-md); /* Espaciado interno */
+  background-color: var(--input-bg-color);      /* Fondo blanco suave */
+  color: var(--primary-color);                  /* Texto morado oscuro */
+  transition: all 0.25s ease;                   /* Transición suave */
+  width: 100%;                                  /* Ancho completo */
+}
+
+/* Estado focus del campo de entrada */
+.form-control-custom:focus {
+  outline: none;                                /* Sin outline por defecto */
+  border-color: var(--secondary-color);         /* Borde gris morado */
+  box-shadow: 0 0 0 3px rgba(132, 121, 150, 0.1); /* Sombra de enfoque */
+}
+
+/* Tarjeta personalizada con gradiente */
+.card-custom {
+  background: linear-gradient(135deg, var(--light-color), var(--background-color)); /* Gradiente suave */
+  border-radius: var(--border-radius-xl);       /* Bordes muy redondeados */
+  padding: var(--spacing-xl);                   /* Espaciado interno grande */
+  box-shadow: var(--shadow-lg);                 /* Sombra para elevación */
+  border: 1px solid var(--accent-color);        /* Borde sutil */
+}
+
+/* Descripción del producto en panel de información */
+.product-description {
+  font-size: 0.95rem;
+  margin: 0.5rem 0 1rem;
+  color: #4b4b4b;
+}
+
+/* UTILIDADES */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+.mb-5 { margin-bottom: var(--spacing-xl); }
+
+.mt-0 { margin-top: 0; }
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+.mt-5 { margin-top: var(--spacing-xl); }
+
+/* Logo en página */
+.page-logo {
+  width: 160px;
+  max-width: 40%;
+  height: auto;
+  display: inline-block;
+}
+
+@media (min-width: 768px) {
+  .page-logo {
+    width: 200px;
+  }
+}
+

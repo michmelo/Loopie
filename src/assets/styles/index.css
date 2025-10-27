@@ -1,0 +1,107 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Paleta de colores personalizada */
+  --color-primary: #310a31;
+  --color-secondary: #847996;
+  --color-accent: #88b7b5;
+  --color-light: #a7cab1;
+  --color-background: #f4ecd6;
+  --color-input-bg: #FCFCFF;
+  
+  color-scheme: light;
+  color: var(--color-primary);
+  background-color: var(--color-background);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: var(--color-secondary);
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--color-accent);
+}
+
+/* Estilos específicos que complementan Bootstrap */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid var(--color-secondary);
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: var(--color-accent);
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+button:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-background);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(49, 10, 49, 0.2);
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Estilos adicionales para la aplicación */
+.login-container {
+  background: linear-gradient(135deg, var(--color-light), var(--color-background));
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(49, 10, 49, 0.1);
+  border: 1px solid var(--color-accent);
+}
+
+.dashboard-container {
+  background: linear-gradient(135deg, var(--color-background), var(--color-light));
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(49, 10, 49, 0.1);
+  border: 1px solid var(--color-accent);
+}
+
+input {
+  border: 2px solid var(--color-accent);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 1em;
+  background-color: var(--color-input-bg);
+  color: var(--color-primary);
+  transition: all 0.25s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 3px rgba(132, 121, 150, 0.1);
+}
+
+input::placeholder {
+  color: var(--color-secondary);
+  opacity: 0.7;
+}
+
