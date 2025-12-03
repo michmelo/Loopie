@@ -1,15 +1,15 @@
 // IMPORTS 
-import { useState } from "react";                    
-import { useNavigate } from "react-router-dom";      
-import { useAuth } from "../hooks/useAuth";    
-import Navbar from "../components/Navbar";            
-import AppFooter from "../components/Footer";       
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import Navbar from "../components/Navbar";
+import AppFooter from "../components/Footer";
 import AuthFormContainer from "../components/auth/AuthFormContainer";
 import RegisterForm from "../components/auth/RegisterForm";
 import AuthMessage from "../components/auth/AuthMessage";
 import AuthLink from "../components/auth/AuthLink";
 import { validateRegistrationData } from "../utils/validation";
-import { saveStoredUser } from "../data/localStorageService";
+import { registerUser } from "../data/api/api";
 
 
 // REGISTRO
@@ -24,12 +24,12 @@ export default function Register() {
         password: "",
         confirmPassword: ""
     });
-    const [error, setError] = useState("");           
-    const [success, setSuccess] = useState(false);    
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState(false);
 
     // HOOKS
-    const { login } = useAuth();                    
-    const navigate = useNavigate();                   
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     // FUNCIÓN DE MANEJO DE CAMBIOS EN INPUTS
     const handleInputChange = (e) => {
@@ -39,19 +39,19 @@ export default function Register() {
 
     // FUNCIÓN DE MANEJO DE REGISTRO
     const handleRegister = async (e) => {
-        e.preventDefault();                   
-        setError("");                   
-        setSuccess(false);                    
+        e.preventDefault();
+        setError("");
+        setSuccess(false);
 
         const validationError = validateRegistrationData(formData);
-        
+
         if (validationError) {
-            setError(validationError); 
+            setError(validationError);
             return;
         }
 
         const nuevoUsuario = {
-            id: String(Date.now()),
+            // id: String(Date.now()), // El backend debería generar el ID
             username: formData.username || formData.email.split("@")[0],
             nombre: formData.firstName,
             apellido: formData.lastName,
@@ -61,25 +61,29 @@ export default function Register() {
             direccion: ""
         };
 
-        // GUARDAR LOCAL (NO HAY POST DISPONIBLE)
-        saveStoredUser(nuevoUsuario);
+        try {
+            // LLAMADA A API REAL
+            await registerUser(nuevoUsuario);
 
-        setSuccess(true);
-        
-        setTimeout(() => {
-            // No se pasa la contraseña por seguridad
-            const publicUser = { ...nuevoUsuario };
-            delete publicUser.password;
-            login(publicUser);
-            navigate("/perfil");
-        }, 1500);
+            setSuccess(true);
+
+            setTimeout(() => {
+                // Login automático o redirigir
+                // Por seguridad, mejor redirigir al login para que obtenga el token real
+                navigate("/login");
+            }, 1500);
+
+        } catch (err) {
+            console.error("Error en registro:", err);
+            setError("Error al registrar usuario. Intente nuevamente.");
+        }
     };
 
     // RENDER
     return (
         <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
             <Navbar />
-            
+
             <div style={{ flexGrow: 1 }} className="container-fluid d-flex justify-content-center align-items-center">
 
                 <AuthFormContainer>
@@ -87,7 +91,7 @@ export default function Register() {
                         Crear Cuenta
                     </h2>
 
-                    <RegisterForm 
+                    <RegisterForm
                         formData={formData}
                         handleInputChange={handleInputChange}
                         handleRegister={handleRegister}
@@ -96,7 +100,7 @@ export default function Register() {
                     <AuthMessage type="error" message={error} />
                     <AuthMessage type="success" message={success ? "¡Cuenta creada exitosamente! Redirigiendo..." : ""} />
 
-                    <AuthLink 
+                    <AuthLink
                         question="¿Ya tienes una cuenta?"
                         linkText="Iniciar Sesión"
                         to="/login"
@@ -105,7 +109,7 @@ export default function Register() {
                 </AuthFormContainer>
 
             </div>
-            
+
             <AppFooter />
         </div>
     );

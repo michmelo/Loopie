@@ -7,7 +7,7 @@ export const PRODUCTOS = [
     "descripcion": "Polera unisex hecha con algodón reciclado, estampado ecológico.",
     "precio": 8000,
     "categoria": "Poleras",
-    "stock": 5,
+    "stock": 1,
     "imagen": "https://images.unsplash.com/photo-1523381294911-8d3cead13475?auto=format&fit=crop&w=800&q=80",
     "enOferta": true,
     "precioOferta": 6000,

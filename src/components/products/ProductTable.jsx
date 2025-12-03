@@ -30,7 +30,7 @@ export default function ProductTable({ products }) {
     };
 
     return (
-        <div className="card-custom" style={{ padding: '0', overflowX: 'auto' }}>
+        <div className="card-custom table-responsive" style={{ padding: '0' }}>
             <table style={tableStyle}>
                 <thead>
                     <tr>
@@ -53,8 +53,8 @@ export default function ProductTable({ products }) {
                             <td style={thTdStyle}>${product.price}</td>
                             <td style={thTdStyle}>{product.category}</td>
                             <td style={thTdStyle}>
-                                <button 
-                                    className="btn-custom" 
+                                <button
+                                    className="btn-custom"
                                     style={{ padding: '6px 12px', fontSize: '0.8rem', backgroundColor: 'var(--secondary-color)', color: 'var(--background-color)' }}
                                     onClick={() => console.log(`Editar producto: ${product.id}`)}
                                 >

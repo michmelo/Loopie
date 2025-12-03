@@ -1,39 +1,77 @@
-/* API SIMULADA */
+/* API SERVICE */
 
 import { ENDPOINTS } from './config';
+import { apiClient } from './client';
 
-// PRODUCTOS (all)
+// --- PRODUCTOS ---
+
 export async function getAllProducts() {
     try {
-        const response = await fetch(ENDPOINTS.PRODUCTOS);
-        if (!response.ok) {
-            throw new Error("Error al obtener los productos.");
-        }
-        const data = await response.json();
-        return data;
+        // GET /api/v1/productos
+        return await apiClient.get(ENDPOINTS.PRODUCTOS);
     } catch (error) {
-        console.error("getAllProducts:",error);
-        return { total_products: 0, products: [] };
+        console.error("getAllProducts:", error);
+        return [];
     }
 }
 
-// USUARIOS (all)
+export async function getProductById(id) {
+    try {
+        // GET /api/v1/productos/{id}
+        return await apiClient.get(`${ENDPOINTS.PRODUCTOS}/${id}`);
+    } catch (error) {
+        console.error("getProductById:", error);
+        return null;
+    }
+}
+
+export async function createProduct(productData) {
+    try {
+        // POST /api/v1/productos
+        return await apiClient.post(ENDPOINTS.PRODUCTOS, productData);
+    } catch (error) {
+        console.error("createProduct:", error);
+        throw error;
+    }
+}
+
+// --- USUARIOS & AUTH ---
+
 export async function getAllUsers() {
     try {
-        const response = await fetch(ENDPOINTS.USUARIOS);
-        if (!response.ok){
-            throw new Error("Error al obtener usuarios.");
-        }
-        const data = await response.json();
-        return data;
+        return await apiClient.get(ENDPOINTS.USUARIOS);
     } catch (error) {
         console.error("getAllUsers:", error);
         return [];
     }
 }
 
-// VALIDAR LOGIN
-export async function validateUser(email, password){
+export async function loginUser(credentials) {
+    try {
+        // POST /api/v1/auth/login
+        // Espera { email, password }
+        return await apiClient.post(ENDPOINTS.AUTH_LOGIN, credentials);
+    } catch (error) {
+        console.error("loginUser:", error);
+        throw error;
+    }
+}
+
+export async function registerUser(userData) {
+    try {
+        // POST /api/v1/auth/register
+        return await apiClient.post(ENDPOINTS.AUTH_REGISTER, userData);
+    } catch (error) {
+        console.error("registerUser:", error);
+        throw error;
+    }
+}
+
+/**
+ * @deprecated Usar loginUser con el backend real.
+ * Mantenido por compatibilidad si el backend no tiene endpoint de login.
+ */
+export async function validateUserMock(email, password) {
     try {
         const users = await getAllUsers();
         const user = users.find(
@@ -41,7 +79,7 @@ export async function validateUser(email, password){
         );
         return user || null;
     } catch (error) {
-        console.error("validateUser:", error);
+        console.error("validateUserMock:", error);
         return null;
     }
 }

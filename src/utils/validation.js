@@ -6,7 +6,7 @@
  */
 export function validateRegistrationData(formData) {
     // Validar que todos los campos estén completos
-    if (!formData.username || !formData.email || !formData.firstName || 
+    if (!formData.username || !formData.email || !formData.firstName ||
         !formData.lastName || !formData.password || !formData.confirmPassword) {
         return "Todos los campos son obligatorios.";
     }
@@ -31,6 +31,31 @@ export function validateRegistrationData(formData) {
 }
 
 /**
+ * Valida un campo individual.
+ * @param {string} name - Nombre del campo.
+ * @param {string} value - Valor del campo.
+ * @param {object} formData - Datos completos del formulario (para comparaciones como password).
+ * @returns {string | null} Error o null.
+ */
+export function validateField(name, value, formData) {
+    switch (name) {
+        case "username":
+        case "firstName":
+        case "lastName":
+            return value.trim() ? null : "Este campo es obligatorio.";
+        case "email":
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(value) ? null : "Email inválido.";
+        case "password":
+            return value.length >= 3 ? null : "Mínimo 3 caracteres.";
+        case "confirmPassword":
+            return value === formData.password ? null : "Las contraseñas no coinciden.";
+        default:
+            return null;
+    }
+}
+
+/**
  * Valida los datos de un formulario de inicio de sesión.
  * @param {string} identifier - Nombre de usuario o email.
  * @param {string} password - Contraseña.
@@ -40,7 +65,7 @@ export function validateLoginData(identifier, password) {
     if (!identifier) {
         return "El nombre de usuario o correo es obligatorio.";
     }
-    
+
     // Esta validación se alinea con la lógica demo que tenías en Login.jsx
     if (password.length < 3) {
         return "Contraseña inválida (mínimo 3 caracteres en este demo).";
@@ -55,9 +80,9 @@ export function validateLoginData(identifier, password) {
  * @returns {string | null} El mensaje de error si falla, o null si es válido.
  */
 export function validateCheckoutForm(formData) {
-    const { 
-        nombreCompleto, telefono, direccion, 
-        comuna, region, cardNumber, expiry, cvv 
+    const {
+        nombreCompleto, telefono, direccion,
+        comuna, region, cardNumber, expiry, cvv
     } = formData;
 
     // --- Validación de Envío (Datos Chilenos) ---
@@ -85,7 +110,7 @@ export function validateCheckoutForm(formData) {
     if (!/^\d{3,4}$/.test(cvv)) {
         return "El CVV es inválido.";
     }
-    
+
     // Validación de Fecha de Vencimiento (MM/AA)
     if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
         return "La fecha de vencimiento debe estar en formato MM/AA.";

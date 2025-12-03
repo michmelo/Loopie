@@ -3,11 +3,15 @@ import { AuthContext } from "./AuthContext";
 import { clearCart, clearOrders } from "../data/localStorageService";
 
 export const AuthProvider = ({ children }) => {
-    // Recuperar sesión guardada -> usa clave de useEffect
+    // Recuperar sesión guardada
     const [user, setUser] = useState(() => {
         try {
-            const stored = localStorage.getItem("usuarioActivo");
-            return stored ? JSON.parse(stored) : null;
+            const storedSession = localStorage.getItem("session_token");
+            if (storedSession) {
+                const { user } = JSON.parse(storedSession);
+                return user;
+            }
+            return null;
         } catch {
             return null;
         }
@@ -15,59 +19,58 @@ export const AuthProvider = ({ children }) => {
 
     // Inicio sesión (usuario activo)
     const login = (userData) => {
-        setUser(userData);
+        // Generar token simulado
+        const token = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        // Crear objeto de sesión seguro (SIN PASSWORD)
+        const safeUser = { ...userData };
+        delete safeUser.password;
+
+        const sessionData = {
+            token,
+            user: safeUser,
+            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        };
+
+        // Guardar en localStorage
+        try {
+            localStorage.setItem("session_token", JSON.stringify(sessionData));
+            // Elimina la clave antigua si existía
+            localStorage.removeItem("usuarioActivo");
+        } catch (err) {
+            console.error("Error guardando sesión:", err);
+        }
+
+        setUser(safeUser);
     }
 
     // Cierre sesión (eliminar usuario activo y limpieza)
     const logout = () => {
-    try {
-        if (user?.id) {
-        clearCart(user.id);
-        clearOrders(user.id);
-        }
-    } catch (err) {
-        console.error("Error limpiando datos locales:", err);
-    }
-
-    setUser(null);
-    };
-    
-    // Sincroniza estado usuario con localStorage
-    useEffect(() => {
         try {
-            // Cifrar contraseña antes, invirtiendo la cadena y aplicando base64.
-            const encodePassword = (pwd) => {
-                try {
-                    if (!pwd && pwd !== "") return pwd;
-                    const reversed = String(pwd).split("").reverse().join("");
-                    return btoa(unescape(encodeURIComponent(reversed)));
-                } catch (err) {
-                    console.error("encodePassword error:", err);
-                    return pwd;
-                }
-            };
-
-            if (user) {
-                const storedUser = { ...user };
-                if (storedUser.password) {
-                    storedUser.password = encodePassword(storedUser.password);
-                }
-                localStorage.setItem("usuarioActivo", JSON.stringify(storedUser));
-            } else {
-                localStorage.removeItem("usuarioActivo");
+            if (user?.id) {
+                // Opcional: limpiar datos locales al salir
+                // clearCart(user.id); 
+                // clearOrders(user.id);
             }
-        } catch (err) { 
-            console.error("Error accediendo al localStorage", err);
+            localStorage.removeItem("session_token");
+            localStorage.removeItem("usuarioActivo");
+        } catch (err) {
+            console.error("Error limpiando datos locales:", err);
         }
-    }, [user]);
+
+        setUser(null);
+    };
+
+    // Ya no usamos useEffect para sincronizar "user" con localStorage pq lo hacemos explícitamente en login/logout.
+    // Esto evita re-guardar datos sensibles si el estado "user" cambia.
 
     // DERIVACION DE ESTADOS PARA RUTAS PROTEGIDAS
     const isAuthenticated = Boolean(user);
     const isAdmin = Boolean(user && (user.rol === "admin" || user.isAdmin));
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}> 
-            {children} 
+        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}>
+            {children}
         </AuthContext.Provider>
     );
 };

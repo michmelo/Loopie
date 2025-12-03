@@ -21,6 +21,16 @@ export const CartProvider = ({ children }) => {
 
   // Actualizar carrito y mantener persistencia
   const addToCart = (product) => {
+    // Lógica de Segunda Mano: Ítems únicos.
+    // Verificar si el producto ya está en el carrito
+    const exists = cart.some((item) => item.id === product.id);
+
+    if (exists) {
+      // Si ya existe, no hacemos nada (o podríamos mostrar un toast)
+      console.warn("Este producto ya está en el carrito.");
+      return;
+    }
+
     const updated = [...cart, product];
     setCart(updated);
     if (user?.id) saveCart(user.id, updated);
