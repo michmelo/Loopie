@@ -1,73 +1,59 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { clearCart, clearOrders } from "../data/localStorageService";
+import { saveSession, getSession, clearSession } from "../data/localStorageService";
 
+// Proveedor de autenticación
 export const AuthProvider = ({ children }) => {
-    // Recuperar sesión guardada -> usa clave de useEffect
+    // Recuperar sesión mínima desde localStorage
     const [user, setUser] = useState(() => {
-        try {
-            const stored = localStorage.getItem("usuarioActivo");
-            return stored ? JSON.parse(stored) : null;
-        } catch {
-            return null;
-        }
+        const session = getSession();
+        if (!session?.user) return null;
+        return session.user; // { id, username, rol }
     });
 
-    // Inicio sesión (usuario activo)
+    // Inicio de sesión
     const login = (userData) => {
-        setUser(userData);
-    }
+        // Generar token simulado (fake token)
+        const token = `sess_${Date.now()}_${Math.random()
+            .toString(36)
+            .slice(2, 9)}`;
 
-    // Cierre sesión (eliminar usuario activo y limpieza)
-    const logout = () => {
-    try {
-        if (user?.id) {
-        clearCart(user.id);
-        clearOrders(user.id);
-        }
-    } catch (err) {
-        console.error("Error limpiando datos locales:", err);
-    }
+        // Normalizar a lo mínimo
+        const minimalUser = {
+            id: userData.id ?? userData.idUsuario ?? null,
+            username: userData.username ?? userData.email ?? null,
+            rol: userData.rol ?? userData.role ?? null,
+        };
 
-    setUser(null);
+        saveSession({ token, user: minimalUser });
+        setUser(minimalUser);
     };
-    
-    // Sincroniza estado usuario con localStorage
-    useEffect(() => {
-        try {
-            // Cifrar contraseña antes, invirtiendo la cadena y aplicando base64.
-            const encodePassword = (pwd) => {
-                try {
-                    if (!pwd && pwd !== "") return pwd;
-                    const reversed = String(pwd).split("").reverse().join("");
-                    return btoa(unescape(encodeURIComponent(reversed)));
-                } catch (err) {
-                    console.error("encodePassword error:", err);
-                    return pwd;
-                }
-            };
 
-            if (user) {
-                const storedUser = { ...user };
-                if (storedUser.password) {
-                    storedUser.password = encodePassword(storedUser.password);
-                }
-                localStorage.setItem("usuarioActivo", JSON.stringify(storedUser));
-            } else {
-                localStorage.removeItem("usuarioActivo");
-            }
-        } catch (err) { 
-            console.error("Error accediendo al localStorage", err);
-        }
-    }, [user]);
+    // Cierre de sesión
+    const logout = () => {
+        clearSession();
+        setUser(null);
+    };
 
-    // DERIVACION DE ESTADOS PARA RUTAS PROTEGIDAS
     const isAuthenticated = Boolean(user);
-    const isAdmin = Boolean(user && (user.rol === "admin" || user.isAdmin));
+    const isAdmin =
+        Boolean(user) &&
+        (user.rol === "admin" ||
+            user.rol === "ADMIN" ||
+            user.role === "admin" ||
+            user.isAdmin === true);
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}> 
-            {children} 
+        <AuthContext.Provider
+            value={{
+                user,
+                login,
+                logout,
+                isAuthenticated,
+                isAdmin,
+            }}
+        >
+            {children}
         </AuthContext.Provider>
     );
 };

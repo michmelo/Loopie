@@ -1,40 +1,35 @@
-import { getAllUsers } from "../data/api/api";
-import { getStoredUsers } from "../data/localStorageService";
+import { loginUser } from "../data/api/api";
 import { validateLoginData } from "./validation";
 
 /**
  * Procesa el intento de inicio de sesión.
- * * @param {string} identifier - Usuario o correo.
+ * @param {string} identifier - Usuario o correo.
  * @param {string} password - Contraseña.
  * @returns {Promise<{ user: object | null, error: string | null }>} 
  */
 export async function authenticateUser(identifier, password) {
+    // 1. Validación local
     const validationError = validateLoginData(identifier, password);
     if (validationError) {
         return { user: null, error: validationError };
     }
 
-    const apiUsers = await getAllUsers();
-    const localUsers = getStoredUsers();
-    // combinar usuarios de API y los registrados en localStorage (los locales toman prioridad si hay mismo id)
-    const usuarios = Array.isArray(apiUsers) ? [...apiUsers] : [];
-    // añadimos los locales al final para que puedan ser encontrados también
-    if (Array.isArray(localUsers) && localUsers.length) {
-        usuarios.push(...localUsers);
+    try {
+        // 2. Intento de login con API Real
+        // Asumimos que el backend espera { email: identifier, password: password }
+        // Si el identifier no es email, el backend debería manejarlo o el front pre-procesarlo.
+        const response = await loginUser({ email: identifier, password });
+
+        // Asumimos que el backend devuelve el objeto usuario en la respuesta (o dentro de data)
+        if (response && (response.id || response.user)) {
+            return { user: response.user || response, error: null };
+        } else {
+            return { user: null, error: "Respuesta inválida del servidor" };
+        }
+
+    } catch (err) {
+        console.error("Error en login:", err);
+        // Manejo básico de errores
+        return { user: null, error: "Credenciales incorrectas o error de conexión" };
     }
-
-    const user = usuarios.find((usr) =>
-        usr.username === identifier || usr.email === identifier
-    );
-
-    if (!user) {
-        return { user: null, error: "Usuario o correo no encontrado" };
-    }
-
-    // Validar contraseña (en este demo se guardan contraseñas en claro)
-    if (user.password !== password) {
-        return { user: null, error: "Contraseña incorrecta" };
-    }
-
-    return { user: user, error: null };
 }

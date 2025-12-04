@@ -1,10 +1,16 @@
-// CENTRALIZACION DE ENDPOINTS MOCK REMOTO
+// CENTRALIZACION DE ENDPOINTS Y URLS
 
-// URL BASE
-export const API_BASE_URL = "http://demo9372342.mockable.io/";
+// URLs BASE (POR MICROSERVICIO)
+export const API_AUTH_BASE_URL = "http://18.234.174.91:8081/";
+export const API_USER_BASE_URL = "http://18.234.174.91:8082/";
+export const API_PRODUCT_BASE_URL = "http://18.234.174.91:8083/";
+export const API_ORDER_BASE_URL = "http://18.234.174.91:8084/";
 
-// ENDPOINTS
+
+// ENDPOINTS (Rutas relativas)
 export const ENDPOINTS = {
-  PRODUCTOS: `${API_BASE_URL}api/v1/productos/all`,
-  USUARIOS: `${API_BASE_URL}api/v1/users/all`,
+  PRODUCTOS: "api/products",
+  USUARIOS: "api/v1/users",
+  AUTH_LOGIN: "api/v1/auth/login",
+  AUTH_REGISTER: "api/v1/auth/register",
 };

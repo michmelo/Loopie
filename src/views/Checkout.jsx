@@ -1,4 +1,3 @@
- 
 import Navbar from "../components/Navbar";
 import PageHeader from "../components/PageHeader";
 import ShippingForm from "../components/checkout/ShippingForm";
@@ -8,8 +7,8 @@ import AppFooter from "../components/Footer";
 import { useCart } from "../hooks/useCart";
 import { usePedidos } from "../hooks/usePedidos";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { parseCLP, formatToCLP } from "../utils/price";
+import { createOrder } from "../data/api/api";
 
 // COMPONENTE PRINCIPAL
 export default function Checkout() {
@@ -17,46 +16,49 @@ export default function Checkout() {
   const { cart, clearUserCart } = useCart();
   const { addOrder } = usePedidos();
   const navigate = useNavigate();
-  const [paymentClicks, setPaymentClicks] = useState(0);
 
   // Usar items del carrito; si está vacío, mantener array vacío
-  const items = (cart || []).map((it) => ({ id: it.id, name: it.name || it.nombre || it.title, precio: parseCLP(it.precio) }));
+    const items = (cart || []).map((it) => ({
+    idProducto: it.id || it.idProducto,
+    nombre: it.name || it.nombre,
+    precio: parseCLP(it.precio),
+  }));
 
   // Cálculos
   const envio = 3500;
   const subtotal = items.reduce((acc, item) => acc + (Number(item.precio) || 0), 0);
   const total = subtotal + envio;
 
-  const order = {
-    items: items.map((item) => ({
-      name: item.name,
-      precio: formatToCLP(item.precio),
-    })),
-    subtotal: formatToCLP(subtotal),
-    envio: formatToCLP(envio),
-    total: formatToCLP(total),
-  };
-
-  // Confirma el pago: crea pedido, limpia carrito y redirige a success
-  const handleConfirmPayment = (metodoPago = "tarjeta") => {
+  const handleConfirmPayment = async (metodoPago = "tarjeta") => {
     try {
-      const next = (paymentClicks || 0) + 1;
-      setPaymentClicks(next);
-      console.log("Payment click #", next, next % 2 === 0 ? "SUCCESS" : "FAIL");
+      const pedido = {
+        items: items.map((i) => ({
+          idProducto: i.idProducto,
+          cantidad: i.cant || 1,
+        })),
+        total,
+        metodoPago,
+      };
 
-      if (next % 2 === 0) {
-        const numericTotal = subtotal + envio;
-        addOrder(cart || [], numericTotal, metodoPago);
-        clearUserCart();
-        navigate("/payment-success");
-      } else {
-        navigate("/payment-error");
-      }
+      await createOrder(pedido);
+      addOrder(cart || [], total, metodoPago);
+      clearUserCart();
+      navigate("/payment-success");
     } catch (err) {
-      console.error("Error al procesar pedido:", err);
+      console.error("Error creando pedido:", err);
       navigate("/payment-error");
     }
   };
+
+  const order = {
+      items: items.map((item) => ({
+        name: item.nombre,
+        precio: formatToCLP(item.precio),
+      })),
+      subtotal: formatToCLP(subtotal),
+      envio: formatToCLP(envio),
+      total: formatToCLP(total),
+    };
 
   // RENDER
   return (

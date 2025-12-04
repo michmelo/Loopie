@@ -1,35 +1,39 @@
 import { useState, useEffect } from "react";
 import { PedidoContext } from "./PedidoContext";
 import { useAuth } from "../hooks/useAuth";
-import { getOrders, createOrder, clearOrders } from "../data/localStorageService";
 
-// Guarda, obtiene y limpia los pedidos del usuario activo usando localStorage.
+// Guarda los pedidos del usuario activo SOLO en memoria (sin localStorage)
 export const PedidoProvider = ({ children }) => {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
 
-  // Al cargar -> obtiene pedidos del usuario activo
+  // Cuando cambia el usuario o se cierra sesión, limpiamos pedidos en memoria
   useEffect(() => {
-    if (user?.id) {
-      const userOrders = getOrders(user.id);
-      setOrders(userOrders);
-    } else {
-      setOrders([]);
-    }
+    setOrders([]);
   }, [user]);
 
-  // Crea nuevo pedido (checkout)
+  /**
+   * Crea y registra un nuevo pedido en memoria.
+   * Copia local para mostrar en la vista de "Pedidos".
+   */
   const addOrder = (cart, total, metodoPago = "tarjeta") => {
-    if (!user?.id) return;
+    if (!user) return;
 
-    const nuevoPedido = createOrder(user.id, cart, total, metodoPago);
+    const nuevoPedido = {
+      id: Date.now(),
+      usuarioId: user.id ?? user.idUsuario ?? null,
+      items: cart || [],
+      total: Number(total) || 0,
+      estado: "pagado", // o "Completado", según lo que quieras mostrar
+      metodoPago,
+      fecha: new Date().toLocaleDateString("es-CL"),
+    };
+
     setOrders((prev) => [...prev, nuevoPedido]);
   };
 
-  // Elimina todos los pedidos del usuario activo
+  // Elimina todos los pedidos del usuario activo en esta sesión
   const clearUserOrders = () => {
-    if (!user?.id) return;
-    clearOrders(user.id);
     setOrders([]);
   };
 

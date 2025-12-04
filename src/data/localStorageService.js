@@ -1,145 +1,81 @@
-// Persistencia de datos en localStorage. Cubre sesión de usuario, carrito y pedidos.
+// Versión acotada
 
-/* SESIÓN DE USUARIO */
+const SESSION_KEY = "session_token";
 
-const USER_KEY = "usuarioActivo";
+/**
+ * Guarda la sesión mínima necesaria:
+ * - token falso
+ * - userId
+ * - username
+ * - rol
+ * - fecha de expiración
+ */
+export function saveSession({ token, user }) {
+  if (!user) return;
 
-// Obtener usuario activo (si existe)
-export function getUserSession() {
+  const sessionData = {
+    token,
+    user: {
+      id: user.id ?? user.idUsuario ?? null,
+      username: user.username ?? user.email ?? null,
+      rol: user.rol ?? null,
+    },
+    // opcional: expiración en 24h
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  };
+
   try {
-    const stored = localStorage.getItem(USER_KEY);
-    return stored ? JSON.parse(stored) : null;
-  } catch {
-    return null;
-  }
-}
-
-// Guarda sesión de usuario
-export function saveUserSession(userData) {
-  try {
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
   } catch (err) {
     console.error("Error guardando sesión:", err);
   }
 }
 
-// Elimina sesión de usuario
-export function clearUserSession() {
+/**
+ * Recupera la sesión (si existe y no está expirada).
+ */
+export function getSession() {
   try {
-    localStorage.removeItem(USER_KEY);
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+
+    const data = JSON.parse(raw);
+
+    // Si quieres validar expiración:
+    if (data.expiresAt) {
+      const now = Date.now();
+      const exp = new Date(data.expiresAt).getTime();
+      if (isNaN(exp) || exp < now) {
+        localStorage.removeItem(SESSION_KEY);
+        return null;
+      }
+    }
+
+    return data;
+  } catch (err) {
+    console.error("Error leyendo sesión:", err);
+    return null;
+  }
+}
+
+/**
+ * Elimina la sesión del usuario.
+ */
+export function clearSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
   } catch (err) {
     console.error("Error limpiando sesión:", err);
   }
 }
 
-/* CARRITO */
-
-const CART_KEY = "carrito";
-
-// Obtener carrito
-export function getCart(userId) {
+/**
+ * Limpieza total
+ */
+export function clearAllStorage() {
   try {
-    const allCarts = JSON.parse(localStorage.getItem(CART_KEY)) || {};
-    return allCarts[userId] || [];
-  } catch {
-    return [];
-  }
-}
-
-// Guardar carrito
-export function saveCart(userId, cart) {
-  try {
-    const allCarts = JSON.parse(localStorage.getItem(CART_KEY)) || {};
-    allCarts[userId] = cart;
-    localStorage.setItem(CART_KEY, JSON.stringify(allCarts));
+    localStorage.clear();
   } catch (err) {
-    console.error("Error guardando carrito:", err);
-  }
-}
-
-// Limpiar carrito
-export function clearCart(userId) {
-  try {
-    const allCarts = JSON.parse(localStorage.getItem(CART_KEY)) || {};
-    delete allCarts[userId];
-    localStorage.setItem(CART_KEY, JSON.stringify(allCarts));
-  } catch (err) {
-    console.error("Error limpiando carrito:", err);
-  }
-}
-
-/* PEDIDOS */
-
-const ORDERS_KEY = "pedidos";
-
-// Obtener pedidos del usuario
-export function getOrders(userId) {
-  try {
-    const allOrders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || {};
-    return allOrders[userId] || [];
-  } catch {
-    return [];
-  }
-}
-
-// Crear un nuevo pedido
-export function createOrder(userId, cart, total, metodoPago = "tarjeta") {
-  const newOrder = {
-    id: Date.now(),
-    usuarioId: userId,
-    items: cart,
-    total,
-    estado: "pagado",
-    metodoPago,
-    fecha: new Date().toLocaleDateString("es-CL"),
-  };
-
-  try {
-    const allOrders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || {};
-    const userOrders = allOrders[userId] || [];
-    userOrders.push(newOrder);
-    allOrders[userId] = userOrders;
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders));
-    return newOrder;
-  } catch (err) {
-    console.error("Error creando pedido:", err);
-    return null;
-  }
-}
-
-// Limpiar el pedido 
-export function clearOrders(userId) {
-  try {
-    const allOrders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || {};
-    delete allOrders[userId];
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders));
-  } catch (err) {
-    console.error("Error limpiando pedidos:", err);
-  }
-}
-
-/* USUARIOS (registro local) */
-const USERS_KEY = "usuariosLocal";
-
-// Obtener usuarios registrados localmente
-export function getStoredUsers() {
-  try {
-    return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-  } catch (err) {
-    console.error("getStoredUsers:", err);
-    return [];
-  }
-}
-
-// Guardar un usuario nuevo en el almacenamiento local
-export function saveStoredUser(user) {
-  try {
-    const users = JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-    users.push(user);
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    return true;
-  } catch (err) {
-    console.error("saveStoredUser:", err);
-    return false;
+    console.error("Error limpiando localStorage:", err);
   }
 }

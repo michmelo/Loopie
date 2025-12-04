@@ -1,43 +1,59 @@
 import { useState, useEffect } from "react";
 import { CartContext } from "./CartContext";
-import { getCart, saveCart, clearCart } from "../data/localStorageService";
 import { useAuth } from "../hooks/useAuth";
 
-// Carrito de compras con persistencia en localStorage por usuario.
-
+// Carrito de compras SOLO en memoria (sin persistencia en localStorage)
 export const CartProvider = ({ children }) => {
   const { user } = useAuth();
   const [cart, setCart] = useState([]);
 
-  // Iniciar o cargar -> recuperar carrito del usuario
+  // Cuando reinicia el usuario, se limpia el carrito
   useEffect(() => {
-    if (user?.id) {
-      const stored = getCart(user.id);
-      setCart(stored);
-    } else {
-      setCart([]);
-    }
+    // Si cambia el usuario logueado o se cierra sesión, reinicia el carrito
+    setCart([]);
   }, [user]);
 
-  // Actualizar carrito y mantener persistencia
+  // Agregar producto al carrito (sin duplicados)
   const addToCart = (product) => {
-    const updated = [...cart, product];
-    setCart(updated);
-    if (user?.id) saveCart(user.id, updated);
+    const productId = product.id ?? product.idProducto;
+
+    if (!productId) {
+      console.warn("Producto sin id válido, no se puede agregar al carrito.");
+      return;
+    }
+
+    const exists = cart.some((item) => (item.id ?? item.idProducto) === productId);
+
+    if (exists) {
+      console.warn("Este producto ya está en el carrito.");
+      return;
+    }
+
+    const normalizedProduct = {
+      ...product,
+      id: productId,
+    };
+
+    setCart((prev) => [...prev, normalizedProduct]);
   };
 
+  // Eliminar producto por id
   const removeFromCart = (productId) => {
-    const updated = cart.filter((item) => item.id !== productId);
-    setCart(updated);
-    if (user?.id) saveCart(user.id, updated);
+    setCart((prev) =>
+      prev.filter((item) => (item.id ?? item.idProducto) !== productId)
+    );
   };
 
+  // Vaciar carrito del usuario actual
   const clearUserCart = () => {
     setCart([]);
-    if (user?.id) clearCart(user.id);
   };
 
-  const total = cart.reduce((sum, item) => sum + (item.precio || 0), 0);
+  // Total simple en número (si necesitas CLP formateado lo haces en la vista)
+  const total = cart.reduce((sum, item) => {
+    const precio = typeof item.precio === "number" ? item.precio : 0;
+    return sum + precio;
+  }, 0);
 
   return (
     <CartContext.Provider

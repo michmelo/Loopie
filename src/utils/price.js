@@ -1,13 +1,16 @@
 // MANEJO DE PRECIOS CLP
 
-// Parsea un valor tipo "49.990" | "$49.990" | 49990 a number
+// Parsea un valor tipo "49.990" | "$49.990" | 49_990 | null a number (CLP)
 export function parseCLP(value) {
-  if (typeof value === 'number') return value;
-  if (!value) return 0;
-  const digits = String(value).replace(/[^0-9]/g, '');
+  if (value == null) return 0; // null o undefined
+  if (typeof value === "number") return value;
+
+  const digits = String(value).replace(/[^\d]/g, "");
   return digits ? Number(digits) : 0;
 }
 
+// Formatea un número a CLP con separadores chilenos
 export function formatToCLP(number) {
-  return '$' + Number(number).toLocaleString('es-CL');
+  if (number == null || isNaN(number)) return "$0";
+  return "$" + Number(number).toLocaleString("es-CL");
 }
