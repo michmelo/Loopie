@@ -1,13 +1,15 @@
-// CENTRALIZACION DE ENDPOINTS MOCK REMOTO
+// CENTRALIZACION DE ENDPOINTS Y URLS
 
-// URL BASE
-// Descomentar la que corresponda según el entorno
-// export const API_BASE_URL = "http://demo9372342.mockable.io/"; // Mock
-export const API_BASE_URL = "http://localhost:8080/"; // Backend Spring Boot Local
+// URLs BASE (POR MICROSERVICIO)
+export const API_AUTH_BASE_URL = "http://18.234.174.91:8081/";
+export const API_USER_BASE_URL = "http://18.234.174.91:8082/";
+export const API_PRODUCT_BASE_URL = "http://18.234.174.91:8083/";
+export const API_ORDER_BASE_URL = "http://18.234.174.91:8084/";
+
 
 // ENDPOINTS (Rutas relativas)
 export const ENDPOINTS = {
-  PRODUCTOS: "api/v1/productos", // Se asume REST: GET /productos, POST /productos, etc.
+  PRODUCTOS: "api/products",
   USUARIOS: "api/v1/users",
   AUTH_LOGIN: "api/v1/auth/login",
   AUTH_REGISTER: "api/v1/auth/register",

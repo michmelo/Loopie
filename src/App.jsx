@@ -32,10 +32,15 @@ import CambiarContrasena from "./views/CambiarContrasena";
 /**
  * Componente raíz de la aplicación. Configura el enrutamiento y el contexto de autenticación
  */
-function AppRoutes() {
 
+function AppRoutes() {
   const { isAuthenticated, isAdmin, user } = useAuth();
-  const isStore = Boolean(user && (user.rol === "tienda" || user.role === "store"));
+
+  const isStore =
+    Boolean(user) &&
+    (user.rol === "tienda" ||
+      user.rol === "TIENDA" ||
+      user.role === "store");
 
   return (
     <Routes>
@@ -50,28 +55,81 @@ function AppRoutes() {
       <Route path="/sobre-nosotras" element={<SobreNosotras />} />
       <Route path="/contacto" element={<Contacto />} />
 
-      {/* Rutas de autenticación (solo accesibles si NO estás autenticado) */}
-      <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/perfil" replace />} />
-      <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/perfil" replace />} />
+      {/* Rutas de autenticación (solo si NO estás autenticado) */}
+      <Route
+        path="/login"
+        element={!isAuthenticated ? <Login /> : <Navigate to="/perfil" replace />}
+      />
+      <Route
+        path="/register"
+        element={
+          !isAuthenticated ? <Register /> : <Navigate to="/perfil" replace />
+        }
+      />
 
       {/* Rutas privadas (requieren autenticación) */}
-      <Route path="/perfil" element={isAuthenticated ? <Profile /> : <Navigate to="/login" replace />} />
-      <Route path="/carrito" element={isAuthenticated ? <Carrito /> : <Navigate to="/login" replace />} />
-      <Route path="/checkout" element={isAuthenticated ? <Checkout /> : <Navigate to="/login" replace />} />
-      <Route path="/payment-success" element={isAuthenticated ? <PaymentSuccess /> : <Navigate to="/login" replace />} />
-      <Route path="/payment-error" element={isAuthenticated ? <PaymentError /> : <Navigate to="/login" replace />} />
+      <Route
+        path="/perfil"
+        element={isAuthenticated ? <Profile /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/carrito"
+        element={isAuthenticated ? <Carrito /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/checkout"
+        element={isAuthenticated ? <Checkout /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/payment-success"
+        element={
+          isAuthenticated ? <PaymentSuccess /> : <Navigate to="/login" replace />
+        }
+      />
+      <Route
+        path="/payment-error"
+        element={
+          isAuthenticated ? <PaymentError /> : <Navigate to="/login" replace />
+        }
+      />
 
       {/* Rutas admin (requieren rol admin) */}
-      <Route path="/admin" element={isAdmin ? <AdminPanel /> : <Navigate to="/no-admin" replace />} />
-      <Route path="/product-report" element={isAdmin ? <ProductReport /> : <Navigate to="/no-admin" replace />} />
+      <Route
+        path="/admin"
+        element={isAdmin ? <AdminPanel /> : <Navigate to="/no-admin" replace />}
+      />
+      <Route
+        path="/product-report"
+        element={
+          isAdmin ? <ProductReport /> : <Navigate to="/no-admin" replace />
+        }
+      />
 
-      {/* Rutas tienda: (requieren rol tienda) */}
-      <Route path="/tienda-panel" element={isStore ? <StoreDashboard /> : <Navigate to="/no-auth" replace />} />
+      {/* Rutas tienda (requieren rol tienda) */}
+      <Route
+        path="/tienda-panel"
+        element={isStore ? <StoreDashboard /> : <Navigate to="/no-auth" replace />}
+      />
 
-      {/* Rutas usuario - subsecciones (requieren rol usuario)*/}
-      <Route path="/pedidos" element={isAuthenticated ? <Pedidos /> : <Navigate to="/login" replace />} />
-      <Route path="/direccion" element={isAuthenticated ? <Direccion /> : <Navigate to="/login" replace />} />
-      <Route path="/cambiar-contrasena" element={isAuthenticated ? <CambiarContrasena /> : <Navigate to="/login" replace />} />
+      {/* Rutas usuario - subsecciones (requieren autenticación) */}
+      <Route
+        path="/pedidos"
+        element={isAuthenticated ? <Pedidos /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/direccion"
+        element={isAuthenticated ? <Direccion /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/cambiar-contrasena"
+        element={
+          isAuthenticated ? (
+            <CambiarContrasena />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        }
+      />
 
       {/* Rutas acceso denegado */}
       <Route path="/no-auth" element={<AccessDenied mode="auth" />} />
@@ -97,6 +155,4 @@ function App() {
   );
 }
 
-export default App
-
-
+export default App;

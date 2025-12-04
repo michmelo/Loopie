@@ -30,20 +30,21 @@ export default function Carrito() {
 
   // CALCULOS CARRITO (usa total del provider)
   const calcularTotalesCarrito = () => {
-    const totalEnvio = 3500;
-    const subtotal = Number(total) - 0;
+      const envio = 3500;
+      const subtotal =
+        total && total > 0
+          ? total
+          : cart.reduce(
+              (acc, item) => acc + parseCLP(item.precio) * (item.cant || 1),
+              0
+            );
+      const totalFinal = subtotal + envio;
 
-    // Si total no es un número válido, calcular manualmente
-    const fallbackSubtotal = cart.reduce((acc, item) => acc + parseCLP(item.precio) * (item.cant || 1), 0);
-    const realSubtotal = Number.isFinite(subtotal) && subtotal > 0 ? subtotal : fallbackSubtotal;
-
-    const totalFinal = realSubtotal + totalEnvio;
-
-    return {
-      subtotal: formatToCLP(realSubtotal),
-      envio: formatToCLP(totalEnvio),
-      total: formatToCLP(totalFinal),
-    };
+      return {
+        subtotal: formatToCLP(subtotal),
+        envio: formatToCLP(envio),
+        total: formatToCLP(totalFinal),
+      };
   };
 
   const orderTotals = calcularTotalesCarrito();

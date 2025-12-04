@@ -1,7 +1,6 @@
 // IMPORTS 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import Navbar from "../components/Navbar";
 import AppFooter from "../components/Footer";
 import AuthFormContainer from "../components/auth/AuthFormContainer";
@@ -10,7 +9,6 @@ import AuthMessage from "../components/auth/AuthMessage";
 import AuthLink from "../components/auth/AuthLink";
 import { validateRegistrationData } from "../utils/validation";
 import { registerUser } from "../data/api/api";
-
 
 // REGISTRO
 /* Maneja el estado, la validación y la lógica de registro */
@@ -22,19 +20,18 @@ export default function Register() {
         firstName: "",
         lastName: "",
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
     });
     const [error, setError] = useState("");
     const [success, setSuccess] = useState(false);
 
     // HOOKS
-    const { login } = useAuth();
     const navigate = useNavigate();
 
     // FUNCIÓN DE MANEJO DE CAMBIOS EN INPUTS
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
     // FUNCIÓN DE MANEJO DE REGISTRO
@@ -43,6 +40,7 @@ export default function Register() {
         setError("");
         setSuccess(false);
 
+        // Validación en frontend
         const validationError = validateRegistrationData(formData);
 
         if (validationError) {
@@ -50,29 +48,28 @@ export default function Register() {
             return;
         }
 
+        // Estructura esperada por el backend (User)
         const nuevoUsuario = {
-            // id: String(Date.now()), // El backend debería generar el ID
+            // El backend genera el ID
             username: formData.username || formData.email.split("@")[0],
             nombre: formData.firstName,
             apellido: formData.lastName,
             email: formData.email,
             password: formData.password,
             rol: "usuario",
-            direccion: ""
+            direccion: "",
         };
 
         try {
-            // LLAMADA A API REAL
+            // LLAMADA A API
             await registerUser(nuevoUsuario);
 
             setSuccess(true);
 
+            // Redirigir al login tras un pequeño delay
             setTimeout(() => {
-                // Login automático o redirigir
-                // Por seguridad, mejor redirigir al login para que obtenga el token real
                 navigate("/login");
             }, 1500);
-
         } catch (err) {
             console.error("Error en registro:", err);
             setError("Error al registrar usuario. Intente nuevamente.");
@@ -81,15 +78,22 @@ export default function Register() {
 
     // RENDER
     return (
-        <div style={{ minHeight: "100vh", backgroundColor: "var(--background-color)", display: "flex", flexDirection: "column" }}>
+        <div
+            style={{
+                minHeight: "100vh",
+                backgroundColor: "var(--background-color)",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
             <Navbar />
 
-            <div style={{ flexGrow: 1 }} className="container-fluid d-flex justify-content-center align-items-center">
-
+            <div
+                style={{ flexGrow: 1 }}
+                className="container-fluid d-flex justify-content-center align-items-center"
+            >
                 <AuthFormContainer>
-                    <h2 className="text-center mb-4">
-                        Crear Cuenta
-                    </h2>
+                    <h2 className="text-center mb-4">Crear Cuenta</h2>
 
                     <RegisterForm
                         formData={formData}
@@ -98,16 +102,19 @@ export default function Register() {
                     />
 
                     <AuthMessage type="error" message={error} />
-                    <AuthMessage type="success" message={success ? "¡Cuenta creada exitosamente! Redirigiendo..." : ""} />
+                    <AuthMessage
+                        type="success"
+                        message={
+                            success ? "¡Cuenta creada exitosamente! Redirigiendo..." : ""
+                        }
+                    />
 
                     <AuthLink
                         question="¿Ya tienes una cuenta?"
                         linkText="Iniciar Sesión"
                         to="/login"
                     />
-
                 </AuthFormContainer>
-
             </div>
 
             <AppFooter />

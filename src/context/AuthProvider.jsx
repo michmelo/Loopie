@@ -1,75 +1,58 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { clearCart, clearOrders } from "../data/localStorageService";
+import { saveSession, getSession, clearSession } from "../data/localStorageService";
 
+// Proveedor de autenticación
 export const AuthProvider = ({ children }) => {
-    // Recuperar sesión guardada
+    // Recuperar sesión mínima desde localStorage
     const [user, setUser] = useState(() => {
-        try {
-            const storedSession = localStorage.getItem("session_token");
-            if (storedSession) {
-                const { user } = JSON.parse(storedSession);
-                return user;
-            }
-            return null;
-        } catch {
-            return null;
-        }
+        const session = getSession();
+        if (!session?.user) return null;
+        return session.user; // { id, username, rol }
     });
 
-    // Inicio sesión (usuario activo)
+    // Inicio de sesión
     const login = (userData) => {
-        // Generar token simulado
-        const token = `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Generar token simulado (fake token)
+        const token = `sess_${Date.now()}_${Math.random()
+            .toString(36)
+            .slice(2, 9)}`;
 
-        // Crear objeto de sesión seguro (SIN PASSWORD)
-        const safeUser = { ...userData };
-        delete safeUser.password;
-
-        const sessionData = {
-            token,
-            user: safeUser,
-            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        // Normalizar a lo mínimo
+        const minimalUser = {
+            id: userData.id ?? userData.idUsuario ?? null,
+            username: userData.username ?? userData.email ?? null,
+            rol: userData.rol ?? userData.role ?? null,
         };
 
-        // Guardar en localStorage
-        try {
-            localStorage.setItem("session_token", JSON.stringify(sessionData));
-            // Elimina la clave antigua si existía
-            localStorage.removeItem("usuarioActivo");
-        } catch (err) {
-            console.error("Error guardando sesión:", err);
-        }
+        saveSession({ token, user: minimalUser });
+        setUser(minimalUser);
+    };
 
-        setUser(safeUser);
-    }
-
-    // Cierre sesión (eliminar usuario activo y limpieza)
+    // Cierre de sesión
     const logout = () => {
-        try {
-            if (user?.id) {
-                // Opcional: limpiar datos locales al salir
-                // clearCart(user.id); 
-                // clearOrders(user.id);
-            }
-            localStorage.removeItem("session_token");
-            localStorage.removeItem("usuarioActivo");
-        } catch (err) {
-            console.error("Error limpiando datos locales:", err);
-        }
-
+        clearSession();
         setUser(null);
     };
 
-    // Ya no usamos useEffect para sincronizar "user" con localStorage pq lo hacemos explícitamente en login/logout.
-    // Esto evita re-guardar datos sensibles si el estado "user" cambia.
-
-    // DERIVACION DE ESTADOS PARA RUTAS PROTEGIDAS
     const isAuthenticated = Boolean(user);
-    const isAdmin = Boolean(user && (user.rol === "admin" || user.isAdmin));
+    const isAdmin =
+        Boolean(user) &&
+        (user.rol === "admin" ||
+            user.rol === "ADMIN" ||
+            user.role === "admin" ||
+            user.isAdmin === true);
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, isAuthenticated, isAdmin }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                login,
+                logout,
+                isAuthenticated,
+                isAdmin,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
